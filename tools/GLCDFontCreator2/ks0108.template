@@ -1,0 +1,29 @@
+?headerSize=6;			needed for calculating the font size in bytes
+?widthTable=true;
+/*
+ * %fontName
+ *
+ * File Name           : %fileName
+ * Date                : %date
+ * Font size in bytes  : %size
+ * Font width          : %width
+ * Font height         : %height
+ * Font first char     : %firstChar
+ * Font last char      : %lastChar
+ * Font used chars     : %charCount
+ *
+ */
+
+const uint8_t %name[] = {
+    %binSize, // size
+    %binWidth, // width (for fixed drawing)
+    %binHeight, // height (for all characters)
+    %binFirstChar, // first char
+    %binCharCount, // char count
+    
+    // char widths (in pixel)
+    %fontWidthData
+    
+    // font data
+    %fontData
+};

@@ -1,0 +1,5 @@
+Hit Station Two|http://89.149.254.138:9000|80s, 90s|0
+idobi Radio: New. Music. Unfiltered. idobi.com|http://68.68.105.148:80|Pop|1
+Abacus.fm|http://199.195.194.92:8011|Classic|0
+Slow Radio (Love Songs & Easy Listening)|http://94.23.56.161:80|Easy Listening|2
+Absolutely Smooth Jazz - SKY.FM - the world's smoothest jazz 24 hours a day|http://scfire-mtc-aa03.stream.aol.com:80/stream/1010|Smooth Jazz|0

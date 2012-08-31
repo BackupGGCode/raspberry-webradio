@@ -1,0 +1,55 @@
+Pi -> ATMega8 (uni-directional)
+
+Clock, Data (3,3V)
+
+
+      
+  +-------+       +--------+
+  |     5V|-------|        |
+  |  PI   |       |  MEGA8 |
+  |       |       |        |  12    +------+
+  |    Clk|---->--|Int0    |--/-->--| GLCD |
+  |   Data|---->--|Data    |        +------+
+  |       |       |        |
+  +-------+       +--------+
+
+
+Protocol (8bit):
+
++-----------------+---------------------------------------------+
+| Command (8 bit) | Data (n bit)                                |
++-----------------+---------------------------------------------+
+| 0x1 (CLS)       | -                                           |
+| 0x2 (DISPLAY)   | 128x64 bit pixels (0,0 to 127,63)           |
+| 0x3 (LIGHT)     | 8 bit, background light intensity           |
+| 0x4 (STAT)      | 8 bit, 0=display off, 1=display on          |
++-----------------+---------------------------------------------+
+
+
+Sending:
+
+
+- Bit 1
+          __
+Clk    __|  |__
+         ____
+Data   _|    |_
+
+- Bit 0
+          __
+Clk    __|  |__
+           
+Data   ________
+
+
+
+Receiving:
+
+Clk -> Int0
+
+IRQ {
+ ring_buffer[bit / 8] <<= 1;
+ ring_buffer[bit / 8] |= Data;
+ bit++;
+}
+
