@@ -11,12 +11,6 @@ char* CURRENT_STATION_FILE;
 char* STATIONS_FILE;
 char* USB_PATH;
 
-//#define SONG_FILE "song.txt"
-//#define CURRENT_STATION_FILE "/var/www/m/current_station.txt"
-//#define STATIONS_FILE "/var/www/m/stations.txt"
-//#define STATIONS_FILE "stations.txt"
-//#define USB_PATH "/media/3062-6ECE/"
-
 #include "lcd.h"
 #include "io.h"
 #include "settings.h"
@@ -73,7 +67,7 @@ int main(int argc, char* argv[]) {
  } 
  if(!settings) {
    if(!Settings_Load("default.conf")) {
-      printf("Error loading settings file!\r\n");
+      printf("%s\r\n", _lng(ERROR_LOADING_SETTINGS));
       return 0;
    }
  }
@@ -115,57 +109,44 @@ int main(int argc, char* argv[]) {
  while(1) {
  
   IO_Get();
-  if(IO_HasChanged()) {
-    Screen_ForceRedraw();
-  }
+  if(IO_HasChanged()) Screen_ForceRedraw();
   
   Screen_Draw();
  
   screen = Screen_GetActive();
   if(screen == SCREEN_MAIN) {
-	int selection = Menu_IsChosen(menu_main);
-	if(selection == 0) {
-		// goto now playing screen
-		Screen_Goto(SCREEN_NOW_PLAYING);
-	} else if(selection == 1) {
-	    // goto stations screen
-		Screen_Goto(SCREEN_STATIONS);	
-	} else if(selection == 2) {
-	    // goto usb screen
-		Screen_Goto(SCREEN_USB);
-	} else if(selection == 3) {
-	    // goto info screen
-	    Screen_Goto(SCREEN_INFO);
-	}
+    int selection = Menu_IsChosen(menu_main);
+    if(selection == 0) {
+      // goto now playing screen
+      Screen_Goto(SCREEN_NOW_PLAYING);
+    } else if(selection == 1) {
+      // goto stations screen
+      Screen_Goto(SCREEN_STATIONS);	
+    } else if(selection == 2) {
+      // goto usb screen
+      Screen_Goto(SCREEN_USB);
+    } else if(selection == 3) {
+      // goto info screen
+      Screen_Goto(SCREEN_INFO);
+    }
   }
   else if(screen == SCREEN_INFO) {
-      if(IO_GetButton(0)) {
-		Screen_Goto(SCREEN_MAIN);
-      }
+    if(IO_GetButton(0)) {
+      Screen_Goto(SCREEN_MAIN);
+    }
   }
   else if(screen == SCREEN_STATIONS) {
-	int selection = Menu_IsChosen(menu_stations);
-	if(selection != -1) {
-		// start station
-		playStation(Menu_GetItemTag(menu_stations, selection));
-	}
-	
-	  
-	if(IO_GetButtonLong(3)) {
-	  asFavorite(1);
-	}
-	
-	if(IO_GetButtonLong(4)) {
-	  asFavorite(2);
-	}
-	
-	if(IO_GetButtonLong(5)) {
-	  asFavorite(3);
-	}
-	
-	if(IO_GetButtonLong(6)) {
-	  asFavorite(4);
-	}
+    int selection = Menu_IsChosen(menu_stations);
+    if(selection != -1) {
+      // start station
+      playStation(Menu_GetItemTag(menu_stations, selection));
+    }
+    
+    // add station as favorite
+    if(IO_GetButtonLong(3)) asFavorite(1);
+    if(IO_GetButtonLong(4)) asFavorite(2);
+    if(IO_GetButtonLong(5)) asFavorite(3);
+    if(IO_GetButtonLong(6)) asFavorite(4);
   }
 
   // home button
@@ -189,28 +170,22 @@ int main(int argc, char* argv[]) {
 	}
       }
       fclose(f);
-      system("shuf /tmp/playlist1.m3u > /tmp/playlist.m3u");
+      char cmd[128];
+      sprintf(cmd, "%s /tmp/playlist1.m3u > /tmp/playlist.m3u", Settings_Get("programs", "shuffle"));
+      system(cmd);
       
       playUSB("/tmp/playlist.m3u");
     }
   }
   
   // (1) button
-  if(IO_GetButton(3)) {
-    playFavorite(1);
-  }
+  if(IO_GetButton(3)) playFavorite(1);
   // (2) button
-  if(IO_GetButton(4)) {
-    playFavorite(2);
-  }
+  if(IO_GetButton(4)) playFavorite(2);
   // (3) button
-  if(IO_GetButton(5)) {
-    playFavorite(3);
-  }
+  if(IO_GetButton(5)) playFavorite(3);
   // (4) button
-  if(IO_GetButton(6)) {
-    playFavorite(4);
-  }
+  if(IO_GetButton(6)) playFavorite(4);
   
   usleep(500);
  

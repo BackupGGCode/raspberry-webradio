@@ -31,7 +31,8 @@ typedef enum {
 	USB_TITLE,
 	NEXT,
 	NO_TITLE,
-	NO_ARTIST
+	NO_ARTIST,
+	ERROR_LOADING_SETTINGS
 } Language_String;
 
 int Language_Init(char* lang);
