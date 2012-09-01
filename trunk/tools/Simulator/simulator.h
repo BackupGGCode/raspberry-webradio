@@ -33,6 +33,10 @@ protected:
   wxButton* m_button7;
   wxButton* m_button8;
   wxButton* m_button9;
+  wxButton* m_button61;
+  wxButton* m_button71;
+  wxButton* m_button81;
+  wxButton* m_button91;
   wxStatusBar* gui_statusbar;
   wxMenuBar* gui_menubar;
   wxMenu* m_file;
@@ -49,6 +53,10 @@ protected:
   void Btn2(wxCommandEvent& event);
   void Btn3(wxCommandEvent& event);
   void Btn4(wxCommandEvent& event);
+  void Btn1l(wxCommandEvent& event);
+  void Btn2l(wxCommandEvent& event);
+  void Btn3l(wxCommandEvent& event);
+  void Btn4l(wxCommandEvent& event);
   void LoadFirmware(wxCommandEvent& event);
   void DoLoadFirmware(wxString path, wxString name);
   void DoUnloadFirmware();

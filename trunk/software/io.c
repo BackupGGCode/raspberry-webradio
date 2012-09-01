@@ -67,7 +67,7 @@ uint8_t IO_HasChanged() {
 // ---------------------------------------------------------------------------
 uint8_t IO_GetButton(uint8_t btn) {
   if(btn >= 8) return 0;
-  uint8_t ret = IO_Value & (1 << btn);
+  uint8_t ret = (IO_Value & (1 << btn)) ? 1 : 0;
   IO_Value &=~(1 << btn);
   return ret;
 }
@@ -75,7 +75,7 @@ uint8_t IO_GetButton(uint8_t btn) {
 // ---------------------------------------------------------------------------
 uint8_t IO_GetButtonLong(uint8_t btn) {
   if(btn >= 8) return 0;
-  uint8_t ret = IO_Value & (1 << (btn + 8));
+  uint8_t ret = (IO_Value & (1 << (btn + 8))) ? 1 : 0;
   IO_Value &=~(1 << (btn + 8));
   return ret;
 }
