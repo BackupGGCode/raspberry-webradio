@@ -23,9 +23,10 @@ void draw_NowPlaying() {
   r.y = 14;
   r.w = SCREEN_W - 12;
   r.h = -1;
-  GLCDD_Print(fnt_dejavu_9b, &r, &buffer[i+3]);
+  if(strlen(&buffer[i+3]) > 1) GLCDD_Print(fnt_dejavu_9b, &r, &buffer[i+3]); else GLCDD_Print(fnt_dejavu_9b, &r, "(no title)");
   r.y = 29;
-  GLCDD_Print(fnt_dejavu_9, &r, buffer);
+  if(strlen(buffer) > 1) GLCDD_Print(fnt_dejavu_9, &r, buffer); else GLCDD_Print(fnt_dejavu_9, &r, "(no artist)");
+  
  
   // get station
   f = fopen(CURRENT_STATION_FILE, "r");
