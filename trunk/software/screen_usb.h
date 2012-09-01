@@ -26,7 +26,9 @@ void createUSBMenu() {
  if((dp = opendir(usb_root)) == NULL) return;
  
  // get supported files
- char* supported = Settings_Get("files", "supported_extensions");
+ char* supported_ro = Settings_Get("files", "supported_extensions");
+ char* supported = (char*)malloc(sizeof(char) * (1 + strlen(supported_ro)));
+ strcpy(supported, supported_ro);
  ArrayList* file_ext = AList_Split(supported, ";");
  
  int id, i;
@@ -57,7 +59,10 @@ void createUSBMenu() {
  
  while((dirp = readdir(dp)) != NULL) {
   if(dirp->d_type == DT_DIR) continue;
-  if(!isSupportedExtension(dirp->d_name, file_ext)) continue;
+  if(!isSupportedExtension(dirp->d_name, file_ext)) {
+    printf("Unsupported: %s\r\n", dirp->d_name);
+    continue;
+  }
   AList_Add(filelist, dirp->d_name);
  }
  AList_Sort(filelist, strcmp);
@@ -71,6 +76,9 @@ void createUSBMenu() {
  AList_Destroy(filelist);
  
  closedir(dp);
+ 
+ AList_Destroy(file_ext);
+ free(supported);
 }
 
 void init_USB() {

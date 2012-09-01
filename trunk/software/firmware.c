@@ -114,7 +114,6 @@ int main(int argc, char* argv[]) {
  
   IO_Get();
   if(IO_HasChanged()) {
-    printf("Some I/O happened\r\n");
     Screen_ForceRedraw();
   }
   
