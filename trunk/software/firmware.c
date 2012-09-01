@@ -66,11 +66,6 @@ int cleanup(void) {
 int main(int argc, char* argv[]) {
  signal(SIGINT, (sig_t)cleanup);
 
- IO_SetSimulate(1);
- GLCDD_SetSimulate(1);
-  
- GLCDD_Init();
- 
  // load settings file
  int settings = 0;
  if(argc == 2) {
@@ -82,7 +77,7 @@ int main(int argc, char* argv[]) {
       return 0;
    }
  }
- 
+
  // load settings
  FW_VERSION = Settings_Get("gui", "version");
  SONG_FILE = Settings_Get("files", "song");
@@ -90,6 +85,13 @@ int main(int argc, char* argv[]) {
  STATIONS_FILE = Settings_Get("files", "stations");
  USB_PATH = Settings_Get("files", "usb");
  
+
+ if(strcmp(Settings_Get("hardware", "io"), "sim") == 0) IO_SetSimulate(1);
+ if(strcmp(Settings_Get("hardware", "lcd"), "sim") == 0) GLCDD_SetSimulate(1);
+ else if(strcmp(Settings_Get("hardware", "lcd"), "bmp") == 0) GLCDD_SetSimulate(2);
+  
+ GLCDD_Init();
+
  Language_Init(Settings_Get("gui", "language"));
  Screen_Init(silkscreen_8);
  
