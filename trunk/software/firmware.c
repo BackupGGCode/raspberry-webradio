@@ -143,23 +143,37 @@ int main(int argc, char* argv[]) {
 	int selection = Menu_IsChosen(menu_stations);
 	if(selection != -1) {
 		// start station
-		StationInfo* info = Menu_GetItemTag(menu_stations, selection);
-		char buffer[512];
-		sprintf(buffer, "%s \"%s\" &", Settings_Get("programs", "stream"), info->url);
-		system(buffer);
-		FILE* f = fopen(Settings_Get("files", "current_station"), "w");
-		fprintf(f, "%s\r\n", info->name);
-		fclose(f);
+		playStation(Menu_GetItemTag(menu_stations, selection));
 	}
   }
 
+  // home button
   if(IO_GetButton(1)) Screen_Goto(SCREEN_MAIN);
-  if(IO_GetButton(2)) {
+  
+  // play/stop button
+  if(IO_GetButton(2)) { 
    char cmd[128];
    sprintf(cmd, "%s &", Settings_Get("programs", "stop"));
    system(cmd);
   }
- 
+  
+  // (1) button
+  if(IO_GetButton(3)) {
+    playFavorite(1);
+  }
+  // (2) button
+  if(IO_GetButton(4)) {
+    playFavorite(2);
+  }
+  // (3) button
+  if(IO_GetButton(5)) {
+    playFavorite(3);
+  }
+  // (4) button
+  if(IO_GetButton(6)) {
+    playFavorite(4);
+  }
+  
   usleep(500);
  
  }

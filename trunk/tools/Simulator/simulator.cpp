@@ -251,19 +251,19 @@ void Window::BtnPlay(wxCommandEvent& event) {
 }
 
 void Window::Btn1(wxCommandEvent& event) {
-  
+  *io = *io | (1 << 3);
 }
 
 void Window::Btn2(wxCommandEvent& event) {
-  
+  *io = *io | (1 << 4);
 }
 
 void Window::Btn3(wxCommandEvent& event) {
-  
+  *io = *io | (1 << 5);
 }
 
 void Window::Btn4(wxCommandEvent& event) {
-  
+  *io = *io | (1 << 6);
 }
 
 void Window::DoLoadFirmware(wxString path, wxString name) {
