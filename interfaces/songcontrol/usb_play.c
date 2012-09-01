@@ -17,6 +17,8 @@
 
 long player_tid = 0;
 int stop = 0;
+char root_path[256];
+
 
 int is_file(char* file, char* ending) {
 	if(strlen(file) >= strlen(ending) && 
@@ -84,8 +86,15 @@ void play_playlist(char* player, char* file) {
 		if(line[0] == '#') continue; // skip comments and meta information
 		// otherwise, check if it is an mp3 and if yes, play it
 		if(is_mp3(line)) {
-		    //printf("play: %s\n", line);
-		    start_player(player, line);
+		    char abs_path[256];  
+		    // if relative path, add root path
+		    if(line[0] == '/') strcpy(abs_path, line);
+		    else {
+		     strcpy(abs_path, root_path);
+		     strcat(abs_path, "/");
+		     strcat(abs_path, line);
+		    }
+		    start_player(player, abs_path);
 		} else {
 		    //printf("no mp3: %s\n", line);
 		}
@@ -117,6 +126,15 @@ int main(int argc, char* argv[]) {
 	if(is_mp3(argv[1])) {
 		start_player(PLAYER, argv[1]);
 	} else if(is_playlist(argv[1])) {
+		// get path
+		int i;
+		for(i = strlen(argv[1]) - 1; i >= 0; i--) {
+		  if(argv[1][i] == '/') {
+		    strcpy(root_path, argv[1]);
+		    root_path[i] = '\0';
+		    break;
+		  }
+		}
 		//printf("playlist\r\n");
 		play_playlist(PLAYER, argv[1]);
 	}
