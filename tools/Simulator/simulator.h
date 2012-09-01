@@ -50,6 +50,8 @@ protected:
   void Btn3(wxCommandEvent& event);
   void Btn4(wxCommandEvent& event);
   void LoadFirmware(wxCommandEvent& event);
+  void DoLoadFirmware(wxString path, wxString name);
+  void DoUnloadFirmware();
   void OnAbout(wxCommandEvent& event);
   void OnQuit(wxCommandEvent& event);
   void OnTimer(wxTimerEvent& event);

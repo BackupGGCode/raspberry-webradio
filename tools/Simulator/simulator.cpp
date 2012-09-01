@@ -33,10 +33,29 @@ char* data;
 uint32_t* io;
 int fd, fd1;
 pid_t pid = 0;
+int firmware_loaded = 0;
 
 Window::Window(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title) {
 	strcpy(SIM_PATH, "../../software/lcd.sim");
 	strcpy(SIM_PATH_IO, "../../software/io.sim");
+	
+	// load firmware from command line parameter
+	if(wxGetApp().argc == 2) {
+	  wxString path = wxString(wxGetApp().argv[1]);
+	  wxString dir, file;
+	  int i;
+	  for(i = path.Len() - 1; i >= 0; i--) {
+	   if(path[i] == '/') {
+	    dir = path.Left(i);
+	    file = path.Right(path.Len() - i - 1);
+	    printf("Path: %s\r\nFirmware: %s\r\n", C_STR(dir), C_STR(file));
+	    DoLoadFirmware(dir, file);
+	    break;
+	   }
+	  }
+	}
+	
+	printf("LCD: %s\r\nIO: %s\r\n", SIM_PATH, SIM_PATH_IO);
 
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
 	SetMinSize(wxSize(370, 360));
@@ -162,49 +181,13 @@ Window::Window(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title
 	m_button8->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn3 ), NULL, this );
 	m_button9->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn4 ), NULL, this );
 	
- cctimer = new wxTimer(this, idTimer);
- cctimer->Start(250);
- Connect(idTimer, wxEVT_TIMER, wxTimerEventHandler(Window::OnTimer)); 
- 
-  // mmap lcd file
-  fd = open(SIM_PATH, O_RDWR | O_CREAT | O_TRUNC, 0777);
-  if(fd == -1) {
-	perror("Error opening file 'lcd.sim' for writing");
-	return;
-  }
-  
-  write(fd, "\0", 128*8); // write 4 0-byte to file
-  data = (char*)mmap(0, 128*8, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-  if(data == MAP_FAILED) {
-    perror("Error mapping file 'lcd.sim'");
-    return;
-  }
-  
-  // mmap io file
-  fd1 = open(SIM_PATH_IO, O_RDWR | O_CREAT | O_TRUNC, 0777);
-  if(fd == -1) {
-	perror("Error opening file 'io.sim' for writing");
-	return;
-  }
-  
-  write(fd1, "\0\0\0\0", 4); // write 4 0-byte to file
-  io = (uint32_t*)mmap(0, 4, PROT_READ | PROT_WRITE, MAP_SHARED, fd1, 0);
-  if(io == MAP_FAILED) {
-    perror("Error mapping file 'io.sim'");
-	return;
-  }
-
-
+	cctimer = new wxTimer(this, idTimer);
+	cctimer->Start(250);
+	Connect(idTimer, wxEVT_TIMER, wxTimerEventHandler(Window::OnTimer)); 
 }
 
 void Window::OnQuit(wxCommandEvent& event) {
- munmap(data, 128*8);
- close(fd);
- munmap(io, 4);
- close(fd1);
- if(pid != 0) {
-  kill(pid, 2);
- }
+ DoUnloadFirmware();
  
  Close();
 }
@@ -283,40 +266,89 @@ void Window::Btn4(wxCommandEvent& event) {
   
 }
 
-void Window::LoadFirmware(wxCommandEvent& event) {
-  wxFileDialog* openFileDialog = new wxFileDialog(this, _("Select firmware"), _(""), _(""),  _("*"), wxOPEN | wxFILE_MUST_EXIST, wxDefaultPosition);
-
-  // restore backup
-  if(openFileDialog->ShowModal() == wxID_OK) {
+void Window::DoLoadFirmware(wxString path, wxString name) {
     if(pid != 0) {
-     printf("unloading firmware...\r\n");
-     kill(pid, 2);
-     pid = 0;
+     DoUnloadFirmware();
     }
     
-    wxString image = openFileDialog->GetDirectory();
+    wxString image = path;
     printf("Firmware: %s\n", C_STR(image));
     strcpy(SIM_PATH, C_STR(image));
     strcat(SIM_PATH, "/lcd.sim");
     strcpy(SIM_PATH_IO, C_STR(image));
-    strcat(SIM_PATH, "/io.sim");
+    strcat(SIM_PATH_IO, "/io.sim");
     
     // fork and execute firmware
     char* input_argv[2];
     char firmware[256];
     strcpy(firmware, C_STR(image));
     strcat(firmware, "/");
-    strcat(firmware, C_STR(openFileDialog->GetFilename()));
+    strcat(firmware, C_STR(name));
     input_argv[0] = firmware;
     input_argv[1] = NULL;
     
     pid = fork();
     if(pid == 0) { // child
       chdir(C_STR(image));
+      
       execvp(input_argv[0], input_argv);
       printf("firmware unloaded!\r\n");
       exit(0);
+    } else {
+      // mmap lcd file
+      fd = open(SIM_PATH, O_RDWR | O_CREAT | O_TRUNC, 0777);
+      if(fd == -1) {
+	perror("Error opening file 'lcd.sim' for writing");
+	return;
+      }
+    
+      write(fd, "\0", 128*8); // write 4 0-byte to file
+      data = (char*)mmap(0, 128*8, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+      if(data == MAP_FAILED) {
+	perror("Error mapping file 'lcd.sim'");
+	return;
+      }
+    
+      // mmap io file
+      fd1 = open(SIM_PATH_IO, O_RDWR | O_CREAT | O_TRUNC, 0777);
+      if(fd == -1) {
+	perror("Error opening file 'io.sim' for writing");
+	return;
+      }
+    
+      write(fd1, "\0\0\0\0", 4); // write 4 0-byte to file
+      io = (uint32_t*)mmap(0, 4, PROT_READ | PROT_WRITE, MAP_SHARED, fd1, 0);
+      if(io == MAP_FAILED) {
+	perror("Error mapping file 'io.sim'");
+	return;
+      }  
+      
     }
+    
+    firmware_loaded = 1;
+}
+
+void Window::DoUnloadFirmware() {
+  if(!firmware_loaded) return;
+  
+  printf("unloading firmware...\r\n");
+  if(pid != 0) kill(pid, 2);
+  pid = 0;
+  
+  munmap(data, 128*8);
+  close(fd);
+  munmap(io, 4);
+  close(fd1);
+  firmware_loaded = 0;
+}
+
+
+void Window::LoadFirmware(wxCommandEvent& event) {
+  wxFileDialog* openFileDialog = new wxFileDialog(this, _("Select firmware"), _(""), _(""),  _("*"), wxOPEN | wxFILE_MUST_EXIST, wxDefaultPosition);
+
+  // restore backup
+  if(openFileDialog->ShowModal() == wxID_OK) {
+    DoLoadFirmware(openFileDialog->GetDirectory(), openFileDialog->GetFilename());
   }
 }
 
