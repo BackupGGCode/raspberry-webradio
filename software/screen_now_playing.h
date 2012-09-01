@@ -36,4 +36,22 @@ void draw_NowPlaying() {
  
   r.y = 44;
   GLCDD_Print(fnt_dejavu_9, &r, buffer);
+  
+  // we play from usb and can therefore skip the song
+  if(strncmp(buffer, "USB", 3) == 0) {
+   GLCDD_RectRounded(SCREEN_W - 36, SCREEN_H - 14, 32, 10, 1);
+   fnt_dejavu_9->color = 1;
+   r.x = SCREEN_W - 29;
+   r.y = SCREEN_H - 13;
+   r.w = 28;
+   r.h = -1;
+   GLCDD_Print(fnt_dejavu_9, &r, "Next");
+   fnt_dejavu_9->color = 0;
+   
+   if(IO_GetButton(0)) {
+      char cmd[64];
+      sprintf(cmd, "%s &", Settings_Get("programs", "next_song"));
+      system(cmd);
+   }
+  }
 }

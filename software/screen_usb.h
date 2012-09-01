@@ -1,17 +1,32 @@
 Menu_Info* menu_usb = NULL;
 char usb_root[512];
 
-char* isSupportedExtension(char* path, ArrayList* file_ext) {
+int isSupportedExtension(char* path, ArrayList* file_ext) {
  int i, j;
  for(i = strlen(path) - 1; i >= 0; i--) {
   if(path[i] == '.') {
    for(j = 0; j < AList_Length(file_ext); j++) {
-     if(strcmp(&path[i + 1], AList_Get(file_ext, j)) == 0) return 1; 
+     if(strcmp(&path[i + 1], (char*)AList_Get(file_ext, j)) == 0) return 1; 
    }
    return 0;
   }
  }
  return 0;
+}
+
+int nameCompare(void* str1, void* str2) {
+  char* name1 = (char*)str1;
+  char* name2 = (char*)str2;
+  int i, len = strlen(name1);
+  
+  if(strlen(name2) < len) len = strlen(name2);
+  for(i = 0; i < len; i++) {
+   if((name1[i] | 32) < (name2[i] | 32)) return -1;
+   else if((name1[i] | 32) > (name2[i] | 32)) return 1;
+  }
+  if(strlen(name1) > strlen(name2)) return 1;
+  else if(strlen(name1) < strlen(name2)) return -1;
+  else return 0;
 }
 
 void createUSBMenu() {
@@ -43,7 +58,7 @@ void createUSBMenu() {
    
    AList_Add(dirlist, dirp->d_name);
  }
- AList_Sort(dirlist, strcmp);
+ AList_Sort(dirlist, nameCompare);
  rewinddir(dp);
  
  // add directories to menu
@@ -59,13 +74,10 @@ void createUSBMenu() {
  
  while((dirp = readdir(dp)) != NULL) {
   if(dirp->d_type == DT_DIR) continue;
-  if(!isSupportedExtension(dirp->d_name, file_ext)) {
-    printf("Unsupported: %s\r\n", dirp->d_name);
-    continue;
-  }
+  if(!isSupportedExtension(dirp->d_name, file_ext)) continue;
   AList_Add(filelist, dirp->d_name);
  }
- AList_Sort(filelist, strcmp);
+ AList_Sort(filelist, nameCompare);
  
  // add files to menu
  for(i = 0; i < AList_Length(filelist); i++) {
@@ -92,7 +104,7 @@ void draw_USB() {
   Menu_Draw(menu_usb, 1, 8);
   int selection = Menu_IsChosen(menu_usb);
   if(selection != -1) {
-    int is_dir = (Menu_GetItemTag(menu_usb, selection) == 1);
+    int is_dir = ((int)Menu_GetItemTag(menu_usb, selection) == 1);
     
     if(is_dir) {
      // change directory
