@@ -170,10 +170,27 @@ int main(int argc, char* argv[]) {
   if(IO_GetButton(1)) Screen_Goto(SCREEN_MAIN);
   
   // play/stop button
-  if(IO_GetButton(2)) { 
-   char cmd[128];
-   sprintf(cmd, "%s &", Settings_Get("programs", "stop"));
-   system(cmd);
+  if(IO_GetButton(2)) {
+    if(screen != SCREEN_USB) {
+      // stop music
+      char cmd[128];
+      sprintf(cmd, "%s &", Settings_Get("programs", "stop"));
+      system(cmd);
+    } else {
+      // play folder
+      int i;
+      FILE* f = fopen("/tmp/playlist1.m3u", "w");
+      for(i = 0; i < Menu_GetItems(menu_usb); i++) {
+	// a file, add it to the list
+	if((int)Menu_GetItemTag(menu_usb, i) == 0) {
+	  fprintf(f, "%s/%s\r\n", usb_root, Menu_GetItemText(menu_usb, i));
+	}
+      }
+      fclose(f);
+      system("shuf /tmp/playlist1.m3u > /tmp/playlist.m3u");
+      
+      playUSB("/tmp/playlist.m3u");
+    }
   }
   
   // (1) button

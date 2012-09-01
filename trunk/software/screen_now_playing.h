@@ -23,9 +23,9 @@ void draw_NowPlaying() {
   r.y = 14;
   r.w = SCREEN_W - 12;
   r.h = -1;
-  if(strlen(&buffer[i+3]) > 1) GLCDD_Print(fnt_dejavu_9b, &r, &buffer[i+3]); else GLCDD_Print(fnt_dejavu_9b, &r, "(no title)");
+  if(strlen(&buffer[i+3]) > 1) GLCDD_Print(fnt_dejavu_9b, &r, &buffer[i+3]); else GLCDD_Print(fnt_dejavu_9b, &r, _lng(NO_TITLE));
   r.y = 29;
-  if(strlen(buffer) > 1) GLCDD_Print(fnt_dejavu_9, &r, buffer); else GLCDD_Print(fnt_dejavu_9, &r, "(no artist)");
+  if(strlen(buffer) > 1) GLCDD_Print(fnt_dejavu_9, &r, buffer); else GLCDD_Print(fnt_dejavu_9, &r, _lng(NO_ARTIST));
   
  
   // get station
@@ -38,14 +38,14 @@ void draw_NowPlaying() {
   GLCDD_Print(fnt_dejavu_9, &r, buffer);
   
   // we play from usb and can therefore skip the song
-  if(strncmp(buffer, "USB", 3) == 0) {
+  if(strncmp(buffer, _lng(USB), strlen(_lng(USB))) == 0) {
    GLCDD_RectRounded(SCREEN_W - 36, SCREEN_H - 14, 32, 10, 1);
    fnt_dejavu_9->color = 1;
    r.x = SCREEN_W - 29;
    r.y = SCREEN_H - 13;
    r.w = 28;
    r.h = -1;
-   GLCDD_Print(fnt_dejavu_9, &r, "Next");
+   GLCDD_Print(fnt_dejavu_9, &r, _lng(NEXT));
    fnt_dejavu_9->color = 0;
    
    if(IO_GetButton(0)) {

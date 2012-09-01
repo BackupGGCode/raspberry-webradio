@@ -1,6 +1,8 @@
 Menu_Info* menu_usb = NULL;
 char usb_root[512];
 
+
+// ---------------------------------------------------------------------------
 int isSupportedExtension(char* path, ArrayList* file_ext) {
  int i, j;
  for(i = strlen(path) - 1; i >= 0; i--) {
@@ -14,6 +16,8 @@ int isSupportedExtension(char* path, ArrayList* file_ext) {
  return 0;
 }
 
+
+// ---------------------------------------------------------------------------
 int nameCompare(void* str1, void* str2) {
   char* name1 = (char*)str1;
   char* name2 = (char*)str2;
@@ -29,6 +33,7 @@ int nameCompare(void* str1, void* str2) {
   else return 0;
 }
 
+// ---------------------------------------------------------------------------
 void createUSBMenu() {
  if(menu_usb != NULL) Menu_Destroy(menu_usb);
   
@@ -93,11 +98,27 @@ void createUSBMenu() {
  free(supported);
 }
 
+// ---------------------------------------------------------------------------
+void playUSB(char* filename) {
+  FILE* f = fopen(Settings_Get("files", "current_station"), "w");
+  if(f != NULL) {
+    fprintf(f, "%s\r\n", _lng(USB));
+    fclose(f);
+  }
+
+  char cmd[128];
+  sprintf(cmd, "%s \"%s\" &", Settings_Get("programs", "local"), filename);
+  system(cmd);
+}
+
+
+// ---------------------------------------------------------------------------
 void init_USB() {
   strcpy(usb_root, Settings_Get("files", "usb"));
   createUSBMenu();
 }
 
+// ---------------------------------------------------------------------------
 void draw_USB() {
   Screen_DrawBorder(_lng(USB_TITLE));  
   
@@ -125,15 +146,9 @@ void draw_USB() {
      printf("cd %s\n", usb_root);
      createUSBMenu();
     } else {
-     FILE* f = fopen(Settings_Get("files", "current_station"), "w");
-     if(f != NULL) {
-       fprintf(f, "USB\r\n");
-       fclose(f);
-     }
-
-     char cmd[128];
-     sprintf(cmd, "%s \"%s/%s\" &", Settings_Get("programs", "local"), usb_root, Menu_GetItemText(menu_usb, selection));
-     system(cmd);
+      char file[128];
+      sprintf(file, "%s/%s", usb_root, Menu_GetItemText(menu_usb, selection));
+      playUSB(file);
     }
   }
 }

@@ -28,7 +28,10 @@ typedef enum {
 	NOT_AVAILABLE,
 	NOT_CONNECTED,
 	STATIONS_TITLE,
-	USB_TITLE
+	USB_TITLE,
+	NEXT,
+	NO_TITLE,
+	NO_ARTIST
 } Language_String;
 
 int Language_Init(char* lang);
