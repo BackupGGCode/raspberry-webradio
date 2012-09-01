@@ -53,6 +53,44 @@ ArrayList* readStations() {
 }
 
 // ---------------------------------------------------------------------------
+void writeStations(ArrayList* stations) {
+ FILE* f = fopen(STATIONS_FILE, "w");
+ if(f == NULL) return;
+ 
+ int i;
+ for(i = 0; i < AList_Length(stations); i++) {
+   StationInfo* info = AList_Get(stations, i);
+   fprintf(f, "%s|%s|%s|%c\r\n", info->name, info->url, info->genre, (info->tag == '\0') ? '0' : info->tag);
+ }
+ 
+ fclose(f);
+}
+
+
+// ---------------------------------------------------------------------------
+void asFavorite(int fav_id) {
+  int sel_id = Menu_GetSelectedItem(menu_stations);
+  ArrayList* stations = readStations();
+  int i;
+
+  char tag = fav_id + '0';
+  Menu_SetTitleTag(menu_stations, sel_id, tag);
+  
+  for(i = 0; i < AList_Length(stations); i++) {
+   StationInfo* info = AList_Get(stations, i);
+   if(info->tag == tag) {
+     info->tag = '\0';
+     Menu_SetTitleTag(menu_stations, i, '\0');
+   }
+   if(i == sel_id) info->tag = tag;
+  }
+  
+  writeStations(stations);
+  AList_Destroy(stations);
+}
+
+
+// ---------------------------------------------------------------------------
 void playFavorite(int id) {
  ArrayList* stations = readStations();
  
@@ -74,37 +112,6 @@ void init_Stations() {
 	menu_stations = Menu_Create(fnt_silkscreen_8, 126, 55);
 	Menu_SetAutoIO(menu_stations, 1);
 	Menu_SetBorder(menu_stations, BORDER_NONE);
-	
-	/*
-	char buffer[256];
-	char* ptr;
-	FILE* f = fopen(STATIONS_FILE, "r");
-	if(f == NULL) return;
-	
-	// read stations
-	while(fgets(buffer, 256, f) != NULL) {
-		if(strlen(buffer) < 3) continue;
-		
-		StationInfo* info = (StationInfo*)malloc(sizeof(StationInfo));
-		ptr = strtok(buffer, "|");
-		info->name = (char*)malloc(sizeof(char) * (1 + strlen(ptr)));
-		strcpy(info->name, ptr);
-		ptr = strtok(NULL, "|");
-		info->url = (char*)malloc(sizeof(char) * (1 + strlen(ptr)));
-		strcpy(info->url, ptr);
-		ptr = strtok(NULL, "|");
-		info->genre = (char*)malloc(sizeof(char) * (1 + strlen(ptr)));
-		strcpy(info->genre, ptr);
-		ptr = strtok(NULL, "|");
-		char tag = '\0';
-		if(ptr != NULL) tag = ptr[0];
-		// add to station list
-		int s_id = Menu_AddItem(menu_stations, info->name);
-		Menu_AddItemTag(menu_stations, s_id, (void*)info);
-		if(tag != '\0' && tag != '0') Menu_SetTitleTag(menu_stations, s_id, tag);
-	}
-	fclose(f);
-	*/
 	
 	ArrayList* stations = readStations();
 	int i;

@@ -113,7 +113,10 @@ int main(int argc, char* argv[]) {
  while(1) {
  
   IO_Get();
-  if(IO_HasChanged()) Screen_ForceRedraw();
+  if(IO_HasChanged()) {
+    printf("Some I/O happened\r\n");
+    Screen_ForceRedraw();
+  }
   
   Screen_Draw();
  
@@ -144,6 +147,23 @@ int main(int argc, char* argv[]) {
 	if(selection != -1) {
 		// start station
 		playStation(Menu_GetItemTag(menu_stations, selection));
+	}
+	
+	  
+	if(IO_GetButtonLong(3)) {
+	  asFavorite(1);
+	}
+	
+	if(IO_GetButtonLong(4)) {
+	  asFavorite(2);
+	}
+	
+	if(IO_GetButtonLong(5)) {
+	  asFavorite(3);
+	}
+	
+	if(IO_GetButtonLong(6)) {
+	  asFavorite(4);
 	}
   }
 

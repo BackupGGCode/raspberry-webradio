@@ -58,7 +58,7 @@ Window::Window(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title
 	printf("LCD: %s\r\nIO: %s\r\n", SIM_PATH, SIM_PATH_IO);
 
 	this->SetSizeHints( wxDefaultSize, wxDefaultSize );
-	SetMinSize(wxSize(370, 360));
+	SetMinSize(wxSize(370, 370));
 
 	wxGridSizer* gui_main_sizer;
 	gui_main_sizer = new wxGridSizer( 1, 1, 0, 0 );
@@ -136,6 +136,31 @@ Window::Window(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title
 	
 	gui_buttons->Add( gui_buttons_nr, 0, 0, 5 );
 	
+	wxBoxSizer* gui_buttons_nr1;
+	gui_buttons_nr1 = new wxBoxSizer( wxHORIZONTAL );
+	
+	m_button61 = new wxButton( this, wxID_ANY, wxT("1l"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button61->SetMaxSize( wxSize( 40,-1 ) );
+	
+	gui_buttons_nr1->Add( m_button61, 0, wxALL, 5 );
+	
+	m_button71 = new wxButton( this, wxID_ANY, wxT("2l"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button71->SetMaxSize( wxSize( 40,-1 ) );
+	
+	gui_buttons_nr1->Add( m_button71, 0, wxALL, 5 );
+	
+	m_button81 = new wxButton( this, wxID_ANY, wxT("3l"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button81->SetMaxSize( wxSize( 40,-1 ) );
+	
+	gui_buttons_nr1->Add( m_button81, 0, wxALL, 5 );
+	
+	m_button91 = new wxButton( this, wxID_ANY, wxT("4l"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_button91->SetMaxSize( wxSize( 40,-1 ) );
+	
+	gui_buttons_nr1->Add( m_button91, 0, wxALL, 5 );
+	
+	gui_buttons->Add( gui_buttons_nr1, 1, wxEXPAND, 5 );
+	
 	gui_sizer_flex->Add( gui_buttons, 0, 0, 5 );
 	
 	gui_main_sizer->Add( gui_sizer_flex, 1, wxEXPAND, 5 );
@@ -167,10 +192,8 @@ Window::Window(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title
 	
 	this->SetMenuBar( gui_menubar );
 	
-	this->Connect( mi_quit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Window::OnQuit ) );
-	this->Connect( mi_load->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Window::LoadFirmware ) );
-	this->Connect( mi_quit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Window::OnQuit ) );
-	this->Connect( mi_about->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Window::OnAbout ) );
+	
+	// Connect Events
 	m_button2->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::RotaryLeft ), NULL, this );
 	m_button3->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::RotaryOk ), NULL, this );
 	m_button4->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::RotaryRight ), NULL, this );
@@ -180,6 +203,13 @@ Window::Window(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title
 	m_button7->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn2 ), NULL, this );
 	m_button8->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn3 ), NULL, this );
 	m_button9->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn4 ), NULL, this );
+	m_button61->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn1l ), NULL, this );
+	m_button71->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn2l ), NULL, this );
+	m_button81->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn3l ), NULL, this );
+	m_button91->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn4l ), NULL, this );
+	this->Connect( mi_load->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Window::LoadFirmware ) );
+	this->Connect( mi_quit->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Window::OnQuit ) );
+	this->Connect( mi_about->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler( Window::OnAbout ) );
 	
 	cctimer = new wxTimer(this, idTimer);
 	cctimer->Start(500);
@@ -264,6 +294,22 @@ void Window::Btn3(wxCommandEvent& event) {
 
 void Window::Btn4(wxCommandEvent& event) {
   *io = *io | (1 << 6);
+}
+
+void Window::Btn1l(wxCommandEvent& event) {
+  *io = *io | (1 << 11);
+}
+
+void Window::Btn2l(wxCommandEvent& event) {
+  *io = *io | (1 << 12);
+}
+
+void Window::Btn3l(wxCommandEvent& event) {
+  *io = *io | (1 << 13);
+}
+
+void Window::Btn4l(wxCommandEvent& event) {
+  *io = *io | (1 << 14);
 }
 
 void Window::DoLoadFirmware(wxString path, wxString name) {
