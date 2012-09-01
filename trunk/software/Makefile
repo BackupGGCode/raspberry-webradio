@@ -4,8 +4,8 @@
 # Creation Date: 2012-08-31
 # Copyright: (c) 2012 by Michael Schwarz
 
-all: firmware.o menu.o lcd.o language.o lcd2bmp.o io.o ip.o disk.o screens.o settings.o
-	gcc firmware.o menu.o lcd.o lcd2bmp.o language.o io.o ip.o disk.o screens.o settings.o -g -o firmware
+all: firmware.o menu.o lcd.o language.o lcd2bmp.o io.o ip.o disk.o screens.o settings.o arraylist.o
+	gcc firmware.o menu.o lcd.o lcd2bmp.o language.o io.o ip.o disk.o screens.o settings.o arraylist.o -g -o firmware
 
 firmware.o: firmware.c
 	gcc firmware.c -c -g -o firmware.o
@@ -36,6 +36,9 @@ screens.o: screens.c
 
 settings.o: settings.c
 	gcc settings.c -c -g -o settings.o
+
+arraylist.o: arraylist.c
+	gcc arraylist.c -c -g -o arraylist.o
 
 
 clean:

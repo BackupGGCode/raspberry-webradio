@@ -182,7 +182,7 @@ Window::Window(wxFrame* frame, const wxString& title) : wxFrame(frame, -1, title
 	m_button9->Connect( wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler( Window::Btn4 ), NULL, this );
 	
 	cctimer = new wxTimer(this, idTimer);
-	cctimer->Start(250);
+	cctimer->Start(500);
 	Connect(idTimer, wxEVT_TIMER, wxTimerEventHandler(Window::OnTimer)); 
 }
 
@@ -203,7 +203,7 @@ void Window::OnTimer(wxTimerEvent& event) {
 void Window::OnPaint(wxPaintEvent& event) {
 // wxString s_used, s_lost, s_free;
  int x, y, off_x, off_y;
- double scale = 2.0;
+ int scale = 2;
  
  off_x = 8;
  off_y = 8;
@@ -214,7 +214,7 @@ void Window::OnPaint(wxPaintEvent& event) {
  // Set line color to black, fill color to white
  dc.SetPen(wxPen(*wxBLACK, 1, wxSOLID));
  dc.SetBrush(wxBrush(*wxBLUE, wxSOLID));
- dc.DrawRectangle(off_x, off_y, 128*scale, 64*scale);
+ dc.DrawRectangle(off_x - 4, off_y - 4, 128*scale + 8, 64*scale + 8);
  
  dc.SetBrush(wxBrush(*wxWHITE, wxSOLID));
  dc.SetPen(wxPen(*wxWHITE, 1, wxSOLID));

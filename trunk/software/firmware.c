@@ -21,6 +21,7 @@ char* USB_PATH;
 #include "io.h"
 #include "settings.h"
 #include "language.h"
+#include "arraylist.h"
 #include "menu.h"
 #include "ip.h"
 #include "disk.h"
