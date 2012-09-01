@@ -146,6 +146,9 @@ int main(int argc, char* argv[]) {
 		char buffer[512];
 		sprintf(buffer, "%s \"%s\" &", Settings_Get("programs", "stream"), info->url);
 		system(buffer);
+		FILE* f = fopen(Settings_Get("files", "current_station"), "w");
+		fprintf(f, "%s\r\n", info->name);
+		fclose(f);
 	}
   }
 
