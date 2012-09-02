@@ -28,6 +28,7 @@ char* USB_PATH;
 #include "images/usb.h"
 #include "images/up.h"
 #include "images/song.h"
+#include "images/playlist.h"
 
 // fonts
 #include "fonts/fnt_dejavu_9.h"
@@ -103,6 +104,10 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_INFO, NULL, draw_Info, NULL);
  Screen_Add(SCREEN_USB, init_USB, draw_USB, NULL);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
+ Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
+ Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
+ Screen_SetRefreshTimeout(SCREEN_STATIONS, 10);
+ Screen_SetRefreshTimeout(SCREEN_USB, 1);
  
  Screen_Goto(SCREEN_MAIN);
  
@@ -111,8 +116,6 @@ int main(int argc, char* argv[]) {
   IO_Get();
   if(IO_HasChanged()) Screen_ForceRedraw();
   
-  Screen_Draw();
- 
   screen = Screen_GetActive();
   if(screen == SCREEN_MAIN) {
     int selection = Menu_IsChosen(menu_main);
@@ -187,7 +190,8 @@ int main(int argc, char* argv[]) {
   // (4) button
   if(IO_GetButton(6)) playFavorite(4);
   
-  usleep(500);
+  Screen_Draw();
+  usleep(200);
  
  }
  
