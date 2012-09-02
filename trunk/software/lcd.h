@@ -34,7 +34,7 @@
 #define DATA   8
 
 typedef struct {
-	char* name;
+	uint8_t* name;
 	uint8_t color;
 } GLCDD_Font;
 

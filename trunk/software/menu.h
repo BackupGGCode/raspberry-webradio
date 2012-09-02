@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <string.h>
 #include "lcd.h"
+#include "io.h"
 
 // ---------------------------------------------------------------------------
 typedef enum {

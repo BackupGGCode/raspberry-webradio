@@ -18,8 +18,6 @@ void draw_Info() {
    int usb_used = 0;
    int usb_conn = Disk_GetStat(USB_PATH, &usb_size, &usb_used);
    
-   char draw_buffer[32];
-   
    GLCDD_Rect r;
    r.x = 6;
    r.w = SCREEN_W - 12;

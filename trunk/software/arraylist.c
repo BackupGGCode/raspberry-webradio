@@ -14,6 +14,7 @@ ArrayList* AList_Create() {
   list->len = 0;
   list->size = 8;
   list->items = malloc(sizeof(void**) * list->size);
+  return list;
 }
 
 

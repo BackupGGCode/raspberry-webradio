@@ -146,7 +146,8 @@ int Settings_Unload() {
 	}
 	free(settings->category);
 	free(settings);
-	settings == NULL;
+	settings = NULL;
+	return 1;
 }
 
 

@@ -32,7 +32,8 @@ typedef enum {
 	NEXT,
 	NO_TITLE,
 	NO_ARTIST,
-	ERROR_LOADING_SETTINGS
+	ERROR_LOADING_SETTINGS,
+	NO_STATION
 } Language_String;
 
 int Language_Init(char* lang);
