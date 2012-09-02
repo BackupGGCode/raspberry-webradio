@@ -130,7 +130,7 @@ void playUSB(char* filename) {
 
   char cmd[512];
   sprintf(cmd, "%s \"%s\" &", Settings_Get("programs", "local"), filename);
-  system(cmd);
+  ignore_result(system(cmd));
 }
 
 

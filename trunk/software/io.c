@@ -23,7 +23,7 @@ uint32_t IO_readValues() {
 	  val = 0;
 	  printf("io error\r\n");
     } else {
-	  fread(&val, sizeof(val), 1, f);
+	  ignore_result(fread(&val, sizeof(val), 1, f));
 	  fseek(f, 0, SEEK_SET);
 	  fwrite(&zero, sizeof(zero), 1, f);
 	  fclose(f);
