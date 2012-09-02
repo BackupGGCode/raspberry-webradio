@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include "settings.h"
+#include "macros.h"
 
 // define SIMULATE to simulate I/O (read from io.sim)
 #define SIMULATE

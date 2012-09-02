@@ -18,6 +18,8 @@
 #include <string.h>
 #include <fcntl.h>
 #include "lcd2bmp.h"
+#include "macros.h"
+
 
 // define SIMULATE to disable hardware output
 #define SIMULATE

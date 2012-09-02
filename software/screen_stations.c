@@ -14,7 +14,7 @@ Menu_Info* menu_stations = NULL;
 void playStation(StationInfo* station) {
   char buffer[512];
   sprintf(buffer, "%s \"%s\" &", Settings_Get("programs", "stream"), station->url);
-  system(buffer);
+  ignore_result(system(buffer));
   FILE* f = fopen(Settings_Get("files", "current_station"), "w");
   fprintf(f, "%s\r\n", station->name);
   fclose(f);

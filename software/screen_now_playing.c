@@ -19,7 +19,7 @@ void draw_NowPlaying() {
   
   FILE* f = fopen(SONG_FILE, "r");
   if(f == NULL) return;
-  fgets(buffer, 512, f);
+  ignore_result(fgets(buffer, 512, f));
   fclose(f);
  
   // split songname - artist
@@ -43,7 +43,7 @@ void draw_NowPlaying() {
   // get station
   f = fopen(CURRENT_STATION_FILE, "r");
   if(f == NULL) return;
-  fgets(buffer, 512, f);
+  ignore_result(fgets(buffer, 512, f));
   fclose(f);
  
   r.y = 44;
@@ -63,7 +63,7 @@ void draw_NowPlaying() {
    if(IO_GetButton(0)) {
       char cmd[64];
       sprintf(cmd, "%s &", Settings_Get("programs", "next_song"));
-      system(cmd);
+      ignore_result(system(cmd));
    }
   }
 }

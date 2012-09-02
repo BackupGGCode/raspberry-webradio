@@ -133,7 +133,7 @@ int main(int argc, char* argv[]) {
       // stop music
       char cmd[128];
       sprintf(cmd, "%s &", Settings_Get("programs", "stop"));
-      system(cmd);
+      ignore_result(system(cmd));
     } else {
       // play folder
       int i;
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
       fclose(f);
       char cmd[128];
       sprintf(cmd, "%s /tmp/playlist1.m3u > /tmp/playlist.m3u", Settings_Get("programs", "shuffle"));
-      system(cmd);
+      ignore_result(system(cmd));
       
       playUSB("/tmp/playlist.m3u");
     }
