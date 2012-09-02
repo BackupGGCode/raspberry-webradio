@@ -1,0 +1,23 @@
+///////////////////////////////////////////////////////////////
+//
+//  Bitmaps
+//
+//  02.09.2012 - Michael Schwarz
+//
+/////////////////////////////////////////////////////////////// 
+
+#ifndef _IMAGES_H_ 
+#define _IMAGES_H_
+
+#include <stdint.h>
+
+extern const uint8_t img_info[];
+extern const uint8_t img_playing[];
+extern const uint8_t img_playlist[];
+extern const uint8_t img_song[];
+extern const uint8_t img_station[];
+extern const uint8_t img_usb[];
+
+#endif
+
+

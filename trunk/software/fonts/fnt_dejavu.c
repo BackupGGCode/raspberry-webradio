@@ -1,5 +1,3 @@
-
-
 /*
  *
  * default
@@ -17,6 +15,7 @@
  * Font used chars     : 96
  *
  */
+#include "../fonts.h"
 
 const uint8_t dejavu_11[] = {
     0x16, 0xC2, // size

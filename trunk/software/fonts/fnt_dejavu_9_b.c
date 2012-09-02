@@ -1,5 +1,3 @@
-
-
 /*
  *
  * dejavu_9_b
@@ -17,6 +15,8 @@
  * Font used chars     : 96
  *
  */
+#include "../fonts.h"
+
 const uint8_t dejavu_9_b[] = {
     0x12, 0x4A, // size
     0x08, // width
