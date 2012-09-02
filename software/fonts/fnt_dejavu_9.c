@@ -1,5 +1,3 @@
-
-
 /*
  *
  * dejavu_9
@@ -35,7 +33,7 @@
  *     uint8_t    font_data[];
  *                  // bit field of all characters
  */
-
+#include "../fonts.h"
 
 const uint8_t dejavu_9[] = {
     0x0F, 0x8E, // size

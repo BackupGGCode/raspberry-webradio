@@ -4,42 +4,16 @@
 # Creation Date: 2012-08-31
 # Copyright: (c) 2012 by Michael Schwarz
 
-all: firmware.o menu.o lcd.o language.o lcd2bmp.o io.o ip.o disk.o screens.o settings.o arraylist.o
-	gcc firmware.o menu.o lcd.o lcd2bmp.o language.o io.o ip.o disk.o screens.o settings.o arraylist.o -g -o firmware
+OBJ=firmware.o menu.o lcd.o language.o lcd2bmp.o io.o ip.o disk.o screens.o settings.o arraylist.o screen_info.o screen_main.o screen_now_playing.o screen_stations.o screen_usb.o fonts/fnt_dejavu.o fonts/fnt_dejavu_9.o fonts/fnt_dejavu_9_b.o fonts/fnt_silkscreen_8.o images/info.o images/playing.o images/playlist.o images/song.o images/station.o images/up.o images/usb.o
+TARGET=firmware
+CFLAGS=-g
+CC=gcc
 
-firmware.o: firmware.c
-	gcc firmware.c -c -g -o firmware.o
+all: $(OBJ)
+	$(CC) $(OBJ) $(CFLAGS) -o $(TARGET)
 
-menu.o: menu.c
-	gcc menu.c -c -g -o menu.o
-
-lcd.o: lcd.c
-	gcc lcd.c -c -g -o lcd.o
-
-language.o: language.c
-	gcc language.c -c -g -o language.o
-
-lcd2bmp.o: lcd2bmp.c
-	gcc lcd2bmp.c -c -g -o lcd2bmp.o
-
-io.o: io.c
-	gcc io.c -c -g -o io.o
-
-ip.o: ip.c
-	gcc ip.c -c -g -o ip.o
-
-disk.o: disk.c
-	gcc disk.c -c -g -o disk.o
-
-screens.o: screens.c
-	gcc screens.c -c -g -o screens.o
-
-settings.o: settings.c
-	gcc settings.c -c -g -o settings.o
-
-arraylist.o: arraylist.c
-	gcc arraylist.c -c -g -o arraylist.o
-
+.c.o:
+	$(CC) -c $(CFLAGS) $< -o $@
 
 clean:
 	rm *.o firmware

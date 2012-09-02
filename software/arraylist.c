@@ -8,6 +8,7 @@
 
 #include "arraylist.h"
 
+// ---------------------------------------------------------------------------
 ArrayList* AList_Create() {
   ArrayList* list = (ArrayList*)malloc(sizeof(ArrayList));
   list->len = 0;
@@ -15,12 +16,16 @@ ArrayList* AList_Create() {
   list->items = malloc(sizeof(void**) * list->size);
 }
 
+
+// ---------------------------------------------------------------------------
 void AList_Destroy(ArrayList* list) {
   list->len = 0;
   free(list->items);
   free(list);
 }
 
+
+// ---------------------------------------------------------------------------
 void AList_Add(ArrayList* list, void* item) {
   list->len++;
   if(list->len > list->size) {
@@ -30,20 +35,28 @@ void AList_Add(ArrayList* list, void* item) {
   list->items[list->len - 1] = item;
 }
 
+
+// ---------------------------------------------------------------------------
 void* AList_Get(ArrayList* list, int index) {
   if(index >= list->len || index < 0) return NULL;
   return list->items[index];
 }
 
+
+// ---------------------------------------------------------------------------
 void AList_Set(ArrayList* list, int index, void* item) {
   if(index >= list->len || index < 0) return;
   list->items[index] = item;
 }
 
+
+// ---------------------------------------------------------------------------
 int AList_Length(ArrayList* list) {
   return list->len; 
 }
 
+
+// ---------------------------------------------------------------------------
 void AList_Delete(ArrayList* list, int index) {
   int i;
   for(i = index; i < list->len - 1; i++) {
@@ -52,6 +65,8 @@ void AList_Delete(ArrayList* list, int index) {
   list->len--;
 }
 
+
+// ---------------------------------------------------------------------------
 void AList_Sort(ArrayList* list, AList_CmpFnc compare) {
   // TODO: better sort algorithm than bubble sort (better than O(n^2)
   int j, k;
@@ -67,6 +82,8 @@ void AList_Sort(ArrayList* list, AList_CmpFnc compare) {
   }
 }
 
+
+// ---------------------------------------------------------------------------
 ArrayList* AList_Split(char* str, char* delimiters) {
   ArrayList* list = AList_Create();
   char* tok = strtok(str, delimiters);

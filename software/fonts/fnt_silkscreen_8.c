@@ -1,5 +1,3 @@
-
-
 /*
  *
  * silkscreen_8
@@ -17,6 +15,8 @@
  * Font used chars     : 96
  *
  */
+
+#include "../fonts.h"
 
 const uint8_t silkscreen_8[] = {
     0x09, 0xC0, // size

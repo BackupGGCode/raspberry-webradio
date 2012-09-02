@@ -1,1 +1,3 @@
+#include "../images.h"
+
 const uint8_t img_playlist[] = {0x0e,0x11,0x15,0x11,0x0e};
