@@ -8,6 +8,7 @@
 
 #include "language.h"
 
+
 char language[] = {'e', 'n', 0};
 char** language_strings = NULL;
 int language_entries = 0;
@@ -19,9 +20,11 @@ int Language_Set(char* lang) {
   return Language_Init(language);
 }
 
+
 char* Language_Get() {
   return &language[0];
 }
+
 
 int Language_Init(char* lang) {
   language[0] = lang[0];
@@ -30,13 +33,13 @@ int Language_Init(char* lang) {
   char buffer[128];
   int entries = 64;
   sprintf(file, "language/%s.lng", language);
-  
+
   FILE* f = fopen(file, "r");
   if(f == NULL) return 0;
-  
+
   // reserve space for strings
   language_strings = (char**)malloc(sizeof(char*) * entries); 
-  
+
   // read all entries
   int index = 0;
   while((fgets(buffer, 128, f)) != NULL) {
@@ -53,6 +56,7 @@ int Language_Init(char* lang) {
   return 1;
 }
 
+
 int Language_Cleanup() {
 	int i;
 	for(i = 0; i < language_entries; i++) {
@@ -64,7 +68,9 @@ int Language_Cleanup() {
 	return 1;
 }
 
+
 char* Language_Translate(Language_String str) {
 	if(str >= language_entries) return NULL;
 	return language_strings[str];
 }
+

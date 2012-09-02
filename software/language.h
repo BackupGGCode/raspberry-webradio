@@ -45,3 +45,4 @@ char* Language_Translate(Language_String str);
 #define _lng(str) Language_Translate(str)
 
 #endif
+
