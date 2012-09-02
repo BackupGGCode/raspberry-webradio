@@ -53,8 +53,6 @@ int8_t Rotary_Get(void) {
 }
 
 void Buttons_Read() {
-  key_timeout = KEY_TIMEOUT;
-  
   uint8_t i, idx = 1;
   for(i = 0; i < BUTTONS; i++) {
     
@@ -104,7 +102,7 @@ void TIMER0_OVF_vect(void) {
 }
 
 volatile uint8_t bit_count = 0;
-ISR(INT2_vect) {
+ISR(INT1_vect) {
 	// button pressed value
 	if(bit_count < 8) {
 		if(Buttons_Get(bit_count)) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
