@@ -61,6 +61,7 @@ int Language_Cleanup() {
 	free(language_strings);
 	language_entries = 0;
 	language_strings = NULL;
+	return 1;
 }
 
 char* Language_Translate(Language_String str) {

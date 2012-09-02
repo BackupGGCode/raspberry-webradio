@@ -13,6 +13,7 @@ GLCDD_Font* createFont(const uint8_t* name) {
 	GLCDD_Font* font = (GLCDD_Font*)malloc(sizeof(GLCDD_Font));
 	font->name = (uint8_t*)name;
 	font->color = 0;
+	return font;
 }
 
 int cleanup(void) {
@@ -71,6 +72,15 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_STATIONS, 10);
  Screen_SetRefreshTimeout(SCREEN_USB, 1);
  
+ // reset current song
+ FILE* f = fopen(Settings_Get("files", "song"), "w");
+ fprintf(f, " - ");
+ fclose(f);
+ f = fopen(Settings_Get("files", "current_station"), "w");
+ fprintf(f, "%s\r\n", _lng(NO_STATION));
+ fclose(f);
+ 
+ // start ui
  Screen_Goto(SCREEN_MAIN);
  
  while(1) {

@@ -9,6 +9,7 @@
 #include "screen_usb.h"
 
 Menu_Info* menu_usb = NULL;
+char playlist_ext[8];
 
 // ---------------------------------------------------------------------------
 int isSupportedExtension(char* path, ArrayList* file_ext) {
@@ -39,8 +40,8 @@ int nameCompare(void* str1, void* str2) {
   int i, len = strlen(name1);
   
   // playlist before songs
-  if(isFileExtension(name1, ".m3u") && !isFileExtension(name2, ".m3u")) return -1;
-  if(!isFileExtension(name1, ".m3u") && isFileExtension(name2, ".m3u")) return 1;
+  if(isFileExtension(name1, playlist_ext) && !isFileExtension(name2, playlist_ext)) return -1;
+  if(!isFileExtension(name1, playlist_ext) && isFileExtension(name2, playlist_ext)) return 1;
   
   if(strlen(name2) < len) len = strlen(name2);
   for(i = 0; i < len; i++) {
@@ -65,6 +66,7 @@ void createUSBMenu() {
  if((dp = opendir(usb_root)) == NULL) return;
  
  // get supported files
+ sprintf(playlist_ext, ".%s", Settings_Get("files", "playlist"));
  char* supported_ro = Settings_Get("files", "supported_extensions");
  char* supported = (char*)malloc(sizeof(char) * (1 + strlen(supported_ro)));
  strcpy(supported, supported_ro);
@@ -106,7 +108,7 @@ void createUSBMenu() {
  // add files to menu
  for(i = 0; i < AList_Length(filelist); i++) {
   id = Menu_AddItem(menu_usb, AList_Get(filelist, i));
-  if(isFileExtension(AList_Get(filelist, i), ".m3u")) Menu_AddItemImage(menu_usb, id, img_playlist, 5, 5);
+  if(isFileExtension(AList_Get(filelist, i), playlist_ext)) Menu_AddItemImage(menu_usb, id, img_playlist, 5, 5);
   else Menu_AddItemImage(menu_usb, id, img_song, 5, 5);
   Menu_AddItemTag(menu_usb, id, (void*)0);
  }
@@ -163,7 +165,6 @@ void draw_USB() {
      } else {
        sprintf(usb_root, "%s/%s", usb_root, Menu_GetItemText(menu_usb, selection));
      }
-     printf("cd %s\n", usb_root);
      createUSBMenu();
     } else {
       char file[512];

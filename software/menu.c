@@ -87,7 +87,7 @@ void Menu_AddItemTag(Menu_Info* menu, int item, void* tag) {
 // ---------------------------------------------------------------------------
 void* Menu_GetItemTag(Menu_Info* menu, int item) {
 	assert(menu != NULL);
-	if(item >= menu->items_count || item < 0) return;
+	if(item >= menu->items_count || item < 0) return NULL;
 	return menu->items[item].tag;
 }
 
@@ -111,11 +111,11 @@ void Menu_SetTitleTag(Menu_Info* menu, int item, char tag) {
 	assert(menu != NULL);
 	if(item >= menu->items_count || item < 0) return;
 	menu->items[item].title_tag = tag;
-	menu->max_tag_width = GLCDD_CharWidth(menu->font->name, tag);
+	menu->max_tag_width = GLCDD_CharWidth((const uint8_t*)menu->font->name, tag);
 	int i;
 	for(i = 0; i < menu->items_count; i++) {
-	  if(menu->items[i].title_tag != '\0' && GLCDD_CharWidth(menu->font->name, menu->items[i].title_tag) > menu->max_tag_width) {
-	   menu->max_tag_width = GLCDD_CharWidth(menu->font->name, menu->items[i].title_tag);
+	  if(menu->items[i].title_tag != '\0' && GLCDD_CharWidth((const uint8_t*)menu->font->name, menu->items[i].title_tag) > menu->max_tag_width) {
+	   menu->max_tag_width = GLCDD_CharWidth((const uint8_t*)menu->font->name, menu->items[i].title_tag);
 	  }
 	}
 }
@@ -123,7 +123,7 @@ void Menu_SetTitleTag(Menu_Info* menu, int item, char tag) {
 // ---------------------------------------------------------------------------
 char* Menu_GetItemText(Menu_Info* menu, int item) {
     assert(menu != NULL);
-    if(item >= menu->items_count || item < 0) return;
+    if(item >= menu->items_count || item < 0) return NULL;
     return menu->items[item].title;
 }
 
@@ -166,7 +166,7 @@ void Menu_Draw(Menu_Info* menu, int x, int y) {
 		if(menu->items[item_index].title_tag != '\0') {
 			int tag_x = x + menu->width - 8 - menu->max_tag_width;
 			int tag_y = r.y;
-			GLCDD_PutChar(menu->font->name, 
+			GLCDD_PutChar((const uint8_t*)menu->font->name, 
 				tag_x, tag_y, 
 				menu->items[item_index].title_tag);
 			GLCDD_Invert(tag_x - 1, tag_y - 1, tag_x + menu->max_tag_width, tag_y + line_height - 3);
