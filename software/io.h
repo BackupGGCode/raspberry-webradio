@@ -26,8 +26,8 @@
 // speed (the higher the value, the slower the speed)
 #define IO_REPEAT 80
 // GPIO pins
-#define IO_CLOCK  7
-#define IO_DATA   8
+#define IO_CLOCK  23
+#define IO_DATA   24
 
 
 void IO_Get();
