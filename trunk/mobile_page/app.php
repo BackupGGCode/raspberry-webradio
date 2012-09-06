@@ -114,8 +114,8 @@ if($('.ui-page-active').attr('id') == "page1") {
   $("#next_button").hide();
   var refreshId = setInterval(function() {
    $.post("next_button.php", null, function(data) {
-    if(data.indexOf("0") == 0) $("#next_button").hide();
-    else $("#next_button").show();
+    if(data.indexOf("1") != -1) $("#next_button").show();
+    else $("#next_button").hide();
   });
    }, 1000);    
 

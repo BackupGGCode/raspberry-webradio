@@ -15,7 +15,7 @@ if [[ ${EUID} -ne 0 ]]; then
 fi
 
 # install required software
-if [ ! -f /usr/bin/avahi-publish ];
+if [ ! -f /usr/sbin/avahi-daemon ];
 then
   echo
   echo "Installing avahi-daemon to access webradio as \"raspberrypi.local\""
@@ -39,7 +39,7 @@ then
   apt-get install id3v2
 fi
 
-if [ ! -f /usr/bin/usbmount ];
+if [ ! -f /usr/share/usbmount/usbmount ];
 then
   echo 
   echo "Installing usbmount"
@@ -47,7 +47,7 @@ then
   apt-get install usbmount
 fi
 
-if [ ! -f /usr/bin/lighttpd ];
+if [ ! -f /usr/sbin/lighttpd ];
 then
   echo
   echo "Installing lighthttpd + php5"
@@ -58,7 +58,7 @@ then
   echo
   mkdir /var/www 2> /dev/null
   chown pi:pi /var/www
-# TODO: change server settings
+  rm /var/log/lighttpd/error.log
 fi
 
 if [ ! -f /usr/local/lib/libwiringPi.a ];
@@ -73,11 +73,28 @@ then
   cd ../../..
 fi
 
+if [ ! -f /usr/include/curl/curl.h ];
+then
+  echo
+  echo "Installing libcurl"
+  echo
+  sudo apt-get install libcurl4-openssl-dev
+fi
+
 # copy mobile page
 echo
 echo "Copy mobile page to webserver directory"
 echo 
 cp -R mobile_page/* /var/www/ 2> /dev/null
+chown pi:pi /var/www/*
+
+# setup lighthttpd
+echo
+echo "Settings up lighttpd"
+echo
+mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighthttpd.conf.old
+cp lighttpd.conf /etc/lighttpd/lighttpd.conf
+/etc/init.d/lighttpd restart
 
 
 # delete old firmware
@@ -119,6 +136,7 @@ echo "Set rights for firmware"
 echo
 chown root /home/pi/firmware
 chmod 4755 /home/pi/firmware
+chmod +x /home/pi/*.sh
 
 # copy language files
 echo
@@ -132,6 +150,7 @@ echo
 echo "Write default configuration file"
 echo
 cp software/default.conf /home/pi/ 2> /dev/null
+
 
 # done
 echo "----------------------------------------------------------------"
