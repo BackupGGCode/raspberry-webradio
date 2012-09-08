@@ -40,6 +40,11 @@ int main() {
  GLCD_Init();
  GLCD_Clear();
  
+ // init backlight
+ DDRC |= (1 << PC2);
+ DDRC &=~(1 << PC3);
+ PORTC &=~(1 << PC2); // port off = backlight on
+ 
  // draw bootscreen
  GLCDD_Clear();
  GLCDD_Rect(0, 0, 128, 64, 0);
@@ -81,6 +86,9 @@ int main() {
      GLCD_SetColumn(0);
      GLCD_SetPage(y);
     }
+   } else {
+     // backlight control
+     if(PINC & (1 << PC3)) PORTC |= (1 << PC2); else PORTC &=~(1 << PC2);
    }
  }
   
