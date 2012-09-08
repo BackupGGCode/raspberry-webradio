@@ -12,10 +12,43 @@ uint8_t GLCD_Data[128*8];
 uint8_t GLCD_Mode = 0; // 0=hardware, 1=simulate, 2=bmp
 uint8_t* GLCD_Map;
 int GLCD_MapFd;
+uint32_t GLCD_BacklightTime, GLCD_BacklightLast;
+uint8_t GLCD_BacklightStat = 0;
+sigset_t intmask;  
+
 
 // ---------------------------------------------------------------------------
 void GLCDD_SetSimulate(uint8_t sim) {
   GLCD_Mode = sim; 
+}
+
+// ---------------------------------------------------------------------------
+void GLCDD_BacklightTimeout(uint32_t seconds) {
+  GLCD_BacklightLast = time(NULL);
+  GLCD_BacklightTime = seconds;
+}
+
+// ---------------------------------------------------------------------------
+void GLCDD_BacklightReset() {
+ GLCD_BacklightLast = time(NULL); 
+}
+
+
+// ---------------------------------------------------------------------------
+void GLCDD_BacklightUpdate() {
+#ifndef SIMULATE
+  if(time(NULL) - GLCD_BacklightLast >= GLCD_BacklightTime) {
+    if(GLCD_BacklightStat != 1) {
+      digitalWrite(BACKLIGHT, 1);
+      GLCD_BacklightStat = 1;
+    }
+  } else {
+    if(GLCD_BacklightStat != 0) {
+      digitalWrite(BACKLIGHT, 0); 
+      GLCD_BacklightStat = 0;
+    }
+  }
+#endif
 }
 
 // ---------------------------------------------------------------------------
@@ -41,6 +74,11 @@ void sendByte(unsigned char b) {
 
 // ---------------------------------------------------------------------------
 void GLCDD_Init() {
+  if ((sigemptyset(&intmask) == -1) || (sigfillset(&intmask) == -1)){  
+    printf("Failed to initialize the signal mask\r\n");  
+    exit(0);
+  }   
+  
   if(GLCD_Mode == 1) { // set up memory mapped output file
     GLCD_MapFd = open("lcd.sim", O_RDWR | O_CREAT | O_TRUNC, 0777);
     if(GLCD_MapFd == -1) {
@@ -63,6 +101,8 @@ void GLCDD_Init() {
 
   pinMode (CLOCK, OUTPUT);
   pinMode (DATA, OUTPUT);
+  pinMode(BACKLIGHT, OUTPUT);
+  digitalWrite(BACKLIGHT, 0);
 #endif
 }
 
@@ -221,9 +261,15 @@ void GLCDD_Rectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t filled)
 void GLCDD_Draw() {
  if(GLCD_Mode == 0) { // send to hardware
   int i;
+  // block signals
+  sigprocmask(SIG_BLOCK, &intmask, NULL);
+
   for(i = 0; i < 128*8; i++) {
    sendByte(GLCD_Data[i]); 
   }
+  
+  // unblock signals
+  sigprocmask(SIG_UNBLOCK, &intmask, NULL);
  } else if(GLCD_Mode == 1) { // send to simulator file
    memcpy(GLCD_Map, GLCD_Data, 128*8);
  } else { // save as bmp

@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <signal.h>  
 #include "settings.h"
 #include "macros.h"
 
@@ -29,7 +30,7 @@
 #define IO_CLOCK  23
 #define IO_DATA   24
 
-
+void IO_Init();
 void IO_Get();
 uint8_t IO_GetButton(uint8_t btn);
 uint8_t IO_GetButtonLong(uint8_t btn);
