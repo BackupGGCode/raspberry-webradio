@@ -10,12 +10,12 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 
-#define PHASE_A     (PIND & (1<<PD5))
-#define PHASE_B     (PIND & (1<<PD6))
+#define PHASE_A     (PIND & (1<<PD6))
+#define PHASE_B     (PIND & (1<<PD5))
 
 #define BUTTON_LONG_PRESS     80
 #define BUTTONS               8
-#define Buttons_ReadOne(idx)  (PINB & idx)
+#define Buttons_ReadOne(idx)  (!(PINB & (idx)))
 
 volatile int8_t enc_delta;
 volatile uint8_t buttons = 0;
@@ -66,7 +66,7 @@ void Buttons_Read() {
       }
     } else {
       if(button_must_release & idx) {
-		if(button_time[i] == 0) {
+		if(button_time[i] < BUTTON_LONG_PRESS) {
 			buttons |= idx;
 		} else {
 			button_time[i] = 0;
@@ -95,29 +95,58 @@ uint8_t Buttons_GetLong(uint8_t id) {
   return ret;
 }
 
+volatile uint8_t bit_count = 0;
+volatile uint32_t current_bit = 1;
+volatile uint32_t current_val = 0;
+
 void TIMER0_OVF_vect(void)__attribute__((interrupt));
 void TIMER0_OVF_vect(void) {
   Rotary_Read();
   Buttons_Read();
+  if(bit_count == 0) {
+    current_val = buttons | (buttons_long << 8) | ((uint8_t)enc_delta << 16);
+  }
 }
 
-volatile uint8_t bit_count = 0;
+volatile uint8_t button_current = 0, button_l_current = 0, rotary_current = 0;
+
 ISR(INT1_vect) {
 	// button pressed value
 	if(bit_count < 8) {
-		if(Buttons_Get(bit_count)) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
+		if(bit_count == 0) {
+		  button_current = buttons;
+		  buttons = 0;
+		}
+		if(button_current & (1 << bit_count)) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
 	} 
 	// button long pressed value
 	else if(bit_count < 16) {
-		if(Buttons_GetLong(bit_count - 8)) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
+		if(bit_count == 8) {
+		 button_l_current = buttons_long;
+		 buttons_long = 0;
+		}
+		if(button_l_current & (1 << (bit_count - 8))) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
 	}
 	// rotary value
-	else if(bit_count < 24){
-		if((uint8_t)Rotary_Get() & (1 << (bit_count - 16))) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
+	else if(bit_count < 24) {
+		if(bit_count == 16) rotary_current = (uint8_t)Rotary_Get();
+		if(rotary_current & (1 << (bit_count - 16))) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
 	}
+	
+/*	if(bit_count == 0) {
+	    buttons = 0;
+	    buttons_long = 0;
+	    enc_delta = 0;
+	}
+	
+	if(current_val & current_bit) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
+	current_bit *= 2;*/
+	
+	bit_count++;
 	// reset bit count
-	else {
+	if(bit_count == 24) {
 		bit_count = 0;
+// 		current_bit = 1;
 	}
 }
 

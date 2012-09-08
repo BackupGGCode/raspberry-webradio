@@ -36,13 +36,13 @@ void init_Main() {
 void draw_Main() {
   time_t rawtime;
   struct tm * timeinfo;
-  char date[16];
+  char date[24];
   
   // format date
   time(&rawtime);
   timeinfo = localtime(&rawtime);
   
-  strftime(date, 16, _lng(DATE_TIME_FORMAT), timeinfo);
+  strftime(date, 24, _lng(DATE_TIME_FORMAT), timeinfo);
   
   Screen_DrawBorder(date);
   

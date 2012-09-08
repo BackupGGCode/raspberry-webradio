@@ -17,14 +17,14 @@
 #include "macros.h"
 
 // define SIMULATE to simulate I/O (read from io.sim)
-#define SIMULATE
+//#define SIMULATE
 
 #ifndef SIMULATE
  #include <wiringPi.h>
 #endif
 
 // speed (the higher the value, the slower the speed)
-#define IO_REPEAT 80
+#define IO_REPEAT 120
 // GPIO pins
 #define IO_CLOCK  23
 #define IO_DATA   24

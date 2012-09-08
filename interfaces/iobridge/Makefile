@@ -13,7 +13,7 @@ FUSE_L  = # see below for fuse values for particular devices
 FUSE_H  = 
 AVRDUDE = sudo avrdude -c usbasp -p $(DEVICE) -B 8 # edit this line for your programmer
 
-CFLAGS  = -I. -O2 -DDEBUG_LEVEL=0 -B /usr/avr/lib -I /usr/avr/include
+CFLAGS  = -I. -O1 -DDEBUG_LEVEL=0 -B /usr/avr/lib -I /usr/avr/include
 OBJECTS = main.o
 
 COMPILE = avr-gcc -Wall -Os -DF_CPU=$(F_CPU) $(CFLAGS) -mmcu=$(DEVICE)
