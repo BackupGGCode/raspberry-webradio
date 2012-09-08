@@ -31,8 +31,10 @@ uint32_t IO_readValues() {
   } else { 
 #ifndef SIMULATE
     int i;
+    pinMode(IO_DATA, INPUT);
+    pinMode(IO_CLOCK, OUTPUT);
     for(i = 0; i < 24; i++) {
-      int j;
+      int j, tmp;
       
       for(j = 0; j < IO_REPEAT; j++) {
 	digitalWrite(IO_CLOCK, 1);
@@ -42,7 +44,18 @@ uint32_t IO_readValues() {
 	digitalWrite(IO_CLOCK, 0);
       }
       
-      val |= digitalRead(IO_DATA) << i;
+      tmp = 0;
+      for(j = 0; j < IO_REPEAT; j++) {
+	if(digitalRead(IO_DATA)) {
+	  tmp = 1;
+	}
+      }
+      
+	//val <<= 1;
+	if(tmp) {
+		//val |= 1;
+		val |= 1 << i;
+	}
     }
 #endif
   }

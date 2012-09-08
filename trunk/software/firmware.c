@@ -163,7 +163,8 @@ int main(int argc, char* argv[]) {
   if(IO_GetButton(6)) playFavorite(4);
   
   Screen_Draw();
-  usleep(200);
+  usleep(100);
+//sleep(1);
  
  }
  

@@ -22,7 +22,7 @@
 
 
 // define SIMULATE to disable hardware output
-#define SIMULATE
+//#define SIMULATE
 
 #ifndef SIMULATE
   #include <wiringPi.h>
@@ -30,7 +30,7 @@
 
 // speed (the higher the value, the slower the speed)
 // -> 30 = ~12 FPS, 35 = ~10 FPS
-#define REPEAT 35
+#define REPEAT 50
 // GPIO pins
 #define CLOCK  7
 #define DATA   8
