@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
  else if(strcmp(Settings_Get("hardware", "lcd"), "bmp") == 0) GLCDD_SetSimulate(2);
   
  GLCDD_Init();
+ IO_Init();
 
  Language_Init(Settings_Get("gui", "language"));
  Screen_Init(silkscreen_8);
@@ -100,22 +101,16 @@ int main(int argc, char* argv[]) {
  Screen_Goto(SCREEN_MAIN);
  
  // background light
- long last_io = 0;
- int screen_timeout = atoi(Settings_Get("hardware", "timeout"));
-#ifndef SIMULATE
- pinMode(25, OUTPUT);
- digitalWrite(25, 0);
-#endif
+ GLCDD_BacklightTimeout(atoi(Settings_Get("hardware", "timeout")));
+ int keep_light_when_playing = 0;
+ if(strcmp(Settings_Get("gui", "keep_light_when_playing"), "true") == 0) keep_light_when_playing = 1;
  
  while(1) {
  
   IO_Get();
   if(IO_HasChanged()) {
     Screen_ForceRedraw();
-    last_io = time(NULL);
-#ifndef SIMULATE
-    digitalWrite(25, 0);
-#endif
+    GLCDD_BacklightReset();
   }
   
   screen = Screen_GetActive();
@@ -152,6 +147,10 @@ int main(int argc, char* argv[]) {
     if(IO_GetButtonLong(4)) asFavorite(2);
     if(IO_GetButtonLong(5)) asFavorite(3);
     if(IO_GetButtonLong(6)) asFavorite(4);
+  }
+  else if(screen == SCREEN_NOW_PLAYING) {
+    // if at now playing screen, backlight is always on
+    if(keep_light_when_playing) GLCDD_BacklightReset(); 
   }
 
   // home button
@@ -193,12 +192,7 @@ int main(int argc, char* argv[]) {
   if(IO_GetButton(6)) playFavorite(4);
   
   Screen_Draw();
-  
-  if(time(NULL) - last_io >= screen_timeout) {
-#ifndef SIMULATE
-    digitalWrite(25, 1);
-#endif
-  }
+  GLCDD_BacklightUpdate();
   
   usleep(100);
 //sleep(1);

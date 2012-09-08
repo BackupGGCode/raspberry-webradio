@@ -11,6 +11,21 @@
 uint32_t IO_Value = 0;
 uint8_t IO_wasChanged = 0;
 uint8_t IO_Mode = 0; // 0=hardware, 1=sim
+sigset_t intmask;  
+
+
+// ---------------------------------------------------------------------------
+void IO_Init() {
+ if ((sigemptyset(&intmask) == -1) || (sigfillset(&intmask) == -1)){  
+   printf("Failed to initialize the signal mask\r\n");  
+   exit(0);
+ }   
+ 
+#ifndef SIMULATE 
+ pinMode(IO_DATA, INPUT);
+ pinMode(IO_CLOCK, OUTPUT);
+#endif
+}
 
 // ---------------------------------------------------------------------------
 uint32_t IO_readValues() {
@@ -31,8 +46,9 @@ uint32_t IO_readValues() {
   } else { 
 #ifndef SIMULATE
     int i;
-    pinMode(IO_DATA, INPUT);
-    pinMode(IO_CLOCK, OUTPUT);
+    // block signals
+    sigprocmask(SIG_BLOCK, &intmask, NULL);
+    
     for(i = 0; i < 24; i++) {
       int j, tmp;
       
@@ -51,12 +67,14 @@ uint32_t IO_readValues() {
 	}
       }
       
-	//val <<= 1;
-	if(tmp) {
-		//val |= 1;
-		val |= 1 << i;
-	}
+      //val <<= 1;
+      if(tmp) {
+	//val |= 1;
+	val |= 1 << i;
+      }
     }
+    // unblock signals
+    sigprocmask(SIG_UNBLOCK, &intmask, NULL);
 #endif
   }
   return val;

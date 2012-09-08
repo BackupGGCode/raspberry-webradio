@@ -16,7 +16,9 @@
 #include <stdarg.h>
 #include <sys/mman.h>
 #include <string.h>
+#include <time.h>
 #include <fcntl.h>
+#include <signal.h>  
 #include "lcd2bmp.h"
 #include "macros.h"
 
@@ -34,6 +36,7 @@
 // GPIO pins
 #define CLOCK  7
 #define DATA   8
+#define BACKLIGHT 25
 
 typedef struct {
 	uint8_t* name;
@@ -66,5 +69,9 @@ void GLCDD_Invert(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void GLCDD_ClearEx(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
 void GLCDD_XBMDraw(uint8_t* img, uint8_t x, uint8_t y, uint8_t w, uint8_t h);
 void GLCDD_Draw();
+void GLCDD_BacklightTimeout(uint32_t seconds);
+void GLCDD_BacklightReset();
+void GLCDD_BacklightUpdate();
+
 
 #endif
