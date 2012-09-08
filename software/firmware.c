@@ -43,6 +43,22 @@ int main(int argc, char* argv[]) {
  STATIONS_FILE = Settings_Get("files", "stations");
  USB_PATH = Settings_Get("files", "usb");
  
+ // check for running instance
+ char* single_instance_cmd = Settings_Get("programs", "check_running");
+ ignore_result(system(single_instance_cmd));
+ FILE *running = fopen("fw.running", "r");
+ if(running == NULL) {
+   printf("Cannot check if firmware is running, aborting.\r\n");
+   exit(0);
+ }
+ if(fgetc(running) >= '2') {
+   fclose(running);
+   printf("Firmware is already running!\r\nExiting...\r\n");
+   exit(0);
+ } else {
+   fclose(running);
+ }
+ 
 
  if(strcmp(Settings_Get("hardware", "io"), "sim") == 0) IO_SetSimulate(1);
  if(strcmp(Settings_Get("hardware", "lcd"), "sim") == 0) GLCDD_SetSimulate(1);
@@ -83,10 +99,24 @@ int main(int argc, char* argv[]) {
  // start ui
  Screen_Goto(SCREEN_MAIN);
  
+ // background light
+ long last_io = 0;
+ int screen_timeout = atoi(Settings_Get("hardware", "timeout"));
+#ifndef SIMULATE
+ pinMode(25, OUTPUT);
+ digitalWrite(25, 0);
+#endif
+ 
  while(1) {
  
   IO_Get();
-  if(IO_HasChanged()) Screen_ForceRedraw();
+  if(IO_HasChanged()) {
+    Screen_ForceRedraw();
+    last_io = time(NULL);
+#ifndef SIMULATE
+    digitalWrite(25, 0);
+#endif
+  }
   
   screen = Screen_GetActive();
   if(screen == SCREEN_MAIN) {
@@ -163,6 +193,13 @@ int main(int argc, char* argv[]) {
   if(IO_GetButton(6)) playFavorite(4);
   
   Screen_Draw();
+  
+  if(time(NULL) - last_io >= screen_timeout) {
+#ifndef SIMULATE
+    digitalWrite(25, 1);
+#endif
+  }
+  
   usleep(100);
 //sleep(1);
  
