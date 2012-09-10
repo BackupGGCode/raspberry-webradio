@@ -1,3 +1,11 @@
+///////////////////////////////////////////////////////////
+//
+// Shoutcast Stream Player
+//
+// 04.08.2012 - Michael Schwarz
+//
+///////////////////////////////////////////////////////////
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,6 +13,7 @@
 #include <unistd.h>
 #include <curl/curl.h>
 #include <curl/easy.h>
+#include "../../software/settings.h"
 
 //#define DEBUG
 
@@ -14,7 +23,21 @@
 #define DEBUG_PRINT //
 #endif
 
+FILE* mp3;
+long pipe_id = 0;
+int is_in_header = 1;
+int next_is_meta = 0;
+unsigned long metaint = 0;
+unsigned long total_recv_byte = 0;
+char title[256];
+char* player =  NULL;
+char* url = NULL;
+char* path = NULL;
+char current_song[256];
+long buffer_size = 8192;
+volatile int stop = 0;
 
+// ---------------------------------------------------------------------------
 FILE* popen_tid(char* args, const char* type, long* tid) { 
   int p[2]; 
   FILE* fp; 
@@ -75,8 +98,8 @@ FILE* popen_tid(char* args, const char* type, long* tid) {
   return NULL; 
 }
 
-long pipe_id = 0;
 
+// ---------------------------------------------------------------------------
 FILE* open_stream_pipe(char* player) {
   FILE *fpout;
 
@@ -86,35 +109,25 @@ FILE* open_stream_pipe(char* player) {
   return fpout;
 }
 
+// ---------------------------------------------------------------------------
 void close_stream_pipe(FILE* pipe) {
   if (pclose(pipe) == -1)
     printf(" ");
 }
 
+// ---------------------------------------------------------------------------
 size_t send_stream_pipe(char* data, size_t size, size_t len, FILE* pipe) {
   return fwrite(data, sizeof(char), len, pipe);
 }
 
-int is_in_header = 1;
-int next_is_meta = 0;
-long metaint = 0;
-long total_recv_byte = 0;
-char title[128];
 
-volatile int stop = 0;
-
-int cleanup(void) {
- printf("stopping...\n");
- stop = 1;
-}
-
+// ---------------------------------------------------------------------------
 size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
   size_t written;
   size_t req_size = size * nmemb;
   
   if(stop) {
     printf("abort\n");
-    exit(5);
     return 0;
   }
   
@@ -156,10 +169,15 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
   
   
   total_recv_byte += size * nmemb;
+  //printf("%lu / %lu\r\n", total_recv_byte, metaint);
+  if(req_size > 2*metaint) DEBUG_PRINT("Warning! Received %lu bytes!\r\n", size * nmemb);
+  
+  int was_meta = 0;
   // we've received meta data
   if(total_recv_byte > metaint) {
+    was_meta = 1;
     DEBUG_PRINT("meta! (got %lu)\n", total_recv_byte);
-    int metapos = req_size - (total_recv_byte - metaint);
+    long metapos = req_size - (total_recv_byte - metaint);
     int metalen = (unsigned char)(*((char*)ptr + metapos)) * 16;
     
     DEBUG_PRINT("metalen: %d\n", metalen);
@@ -174,8 +192,8 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
     
     // parse title
     if(metalen > 0) {
-      int start_title = metapos + 1;
-      int end_title;
+      long start_title = metapos + 1;
+      long end_title;
       while(*((char*)ptr + start_title) != '\'' && start_title < metapos + metalen) start_title++;
       start_title++;
       end_title = start_title + 1;
@@ -186,7 +204,7 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
       strcpy(title, (char*)ptr + start_title);
       printf("Song: %s\n", title);
       // save song in file
-      FILE* song_file = fopen("song.txt", "w");
+      FILE* song_file = fopen(current_song, "w");
       fprintf(song_file, "%s\n", title);
       fclose(song_file);
     }
@@ -196,16 +214,19 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
     send_stream_pipe(ptr, size, metapos, stream);
     send_stream_pipe(ptr + metapos + metalen + 1, size, total_recv_byte, stream);
     return req_size;
-  } else {
+  } 
+  
+  if(!was_meta) {
     // no metadata, just music
     written = send_stream_pipe(ptr, size, nmemb, stream);
     return req_size;
   }
 }
 
-FILE* mp3;
-void start_stream(char* url, char* player) {
-  
+
+// ---------------------------------------------------------------------------
+void start_stream() {
+  DEBUG_PRINT("Playing '%s' with '%s'\r\n", url, player);
   CURL* curl;
   CURLcode res;
   struct curl_slist* slist = NULL;
@@ -221,6 +242,7 @@ void start_stream(char* url, char* player) {
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, mp3);
+    curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, buffer_size);
 
     slist = curl_slist_append(slist, "Icy-MetaData:1");  
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist);
@@ -237,20 +259,57 @@ void start_stream(char* url, char* player) {
   
 }
 
+
+// ---------------------------------------------------------------------------
+int cleanup(void) {
+ printf("stopping...\n");
+ stop = 1;
+}
+
+// ---------------------------------------------------------------------------
 void exit_func() {
   char kill[64];
   sprintf(kill, "kill -9 %ld\n", pipe_id);
   system(kill);
 }
 
+// ---------------------------------------------------------------------------
+void broken_pipe() {
+ DEBUG_PRINT("Broken pipe! Restarting...\r\n"); 
+ stop = 1;
+ char* argv[] = {path, url, NULL};
+ execv(path, argv);
+}
+
+// ---------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
-  char* url = "http://173.192.207.51:8022"; //"http://bertjuhh66.ftpaccess.cc:8000"; //"http://relay.181.fm:8072"; //"http://relay.181.fm:8062"; //"http://he-srv5.defjay.de:80";
-  
+  // initialize signal handlers
   signal(SIGINT, (sig_t)cleanup);
+  signal(SIGPIPE, (sig_t)broken_pipe);
   atexit(exit_func);
   
-  //start_stream(argv[1], "mpg123 - 2>&1 | cat > /dev/null");
-  start_stream(argv[1], "mpg123");
+  // load settings
+  Settings_Load("play.conf");
+  
+  player = Settings_Get("program", "player");
+  strcpy(current_song, Settings_Get("path", "current_song"));
+  buffer_size = atol(Settings_Get("program", "buffer"));
+  
+  // reset current song
+  FILE* song_file = fopen(current_song, "w");
+  fprintf(song_file, "%s\n", " - ");
+  fclose(song_file);
+    
+  // save program name and url to play
+  url = argv[1];
+  path = argv[0];
+  
+  // start the stream
+  start_stream();
+  
+  // if done, cleanup
+  Settings_Unload();
+  return 0;
 }
 
 
