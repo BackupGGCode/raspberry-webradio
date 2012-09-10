@@ -15,6 +15,7 @@
 #include <mntent.h>
 #include <sys/vfs.h>
 #include <getopt.h>
+#include "macros.h"
 
 int Disk_GetStat(char* path, long* size, int* used_perc);
 
