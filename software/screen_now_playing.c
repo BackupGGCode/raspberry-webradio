@@ -23,13 +23,15 @@ void draw_NowPlaying() {
   fclose(f);
  
   // split songname - artist
-  int i;
+  int i, found = 0;
   for(i = 0; i < strlen(buffer); i++) {
    if(buffer[i] == ' ' && buffer[i+1] == '-' && buffer[i+2] == ' ') {
      buffer[i+1] = 0;
+     found = 1;
      break;
    }
   }
+  if(!found) i = -3;
  
   r.x = 6;
   r.y = 14;
