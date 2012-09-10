@@ -17,6 +17,17 @@ int Disk_GetStat(char* path, long* size, int* used_perc) {
   return 0;
  }
  
+ // check if mounted
+ char buffer[128];
+ sprintf(buffer, "cat /proc/mounts | grep \"%s\" | wc -l > /tmp/is_mounted", path);
+ ignore_result(system(buffer));
+ FILE* f = fopen("/tmp/is_mounted", "r");
+ char is_mounted = fgetc(f);
+ fclose(f);
+ 
+ if(is_mounted == '0') return 0;
+ 
+ // get blocks
  if(s.f_blocks > 0) {
   blocks_used = s.f_blocks - s.f_bfree;
   if(blocks_used == 0) {
