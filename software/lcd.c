@@ -336,7 +336,7 @@ int GLCDD_PutChar(const uint8_t *font, int x, int y, char c) {
 // ---------------------------------------------------------------------------
 int GLCDD_PrintGeneric(const uint8_t* font, int x, int y, int max_w, char* str, uint8_t col, uint8_t del_before) {
  int w = 0;
- while(*str) {
+ while(str && *str) {
   w += GLCDD_CharWidth(font, *str) + 1;
   if(max_w != -1 && w > max_w) break;
   x += GLCDD_PutCharCol(font, x, y, *str, col);
@@ -385,7 +385,7 @@ int GLCDD_FontHeight(GLCDD_Font* font) {
 // ---------------------------------------------------------------------------
 int GLCDD_StringWidth(GLCDD_Font* font, char* str) {
  int width = 0;
- while(*str) {
+ while(str && *str) {
   width += GLCDD_CharWidth((const uint8_t*)font->name, *str++) + 1; 
  }
  return width;

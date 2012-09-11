@@ -49,5 +49,6 @@ GLCDD_Font* fnt_silkscreen_8;
 #include "screen_info.h"
 #include "screen_stations.h"
 #include "screen_usb.h"
+#include "screen_shutdown.h"
 
 #endif

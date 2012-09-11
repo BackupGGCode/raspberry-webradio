@@ -83,11 +83,13 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_STATIONS, init_Stations, draw_Stations, exit_Stations);
  Screen_Add(SCREEN_INFO, NULL, draw_Info, NULL);
  Screen_Add(SCREEN_USB, init_USB, draw_USB, NULL);
+ Screen_Add(SCREEN_SHUTDOWN, init_Shutdown, draw_Shutdown, NULL);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
  Screen_SetRefreshTimeout(SCREEN_STATIONS, 10);
  Screen_SetRefreshTimeout(SCREEN_USB, 1);
+ Screen_SetRefreshTimeout(SCREEN_SHUTDOWN, 10);
  
  // reset current song
  FILE* f = fopen(Settings_Get("files", "song"), "w");
@@ -104,6 +106,7 @@ int main(int argc, char* argv[]) {
  GLCDD_BacklightTimeout(atoi(Settings_Get("hardware", "timeout")));
  int keep_light_when_playing = 0;
  if(strcmp(Settings_Get("gui", "keep_light_when_playing"), "true") == 0) keep_light_when_playing = 1;
+ GLCDD_BacklightReset();
  
  while(1) {
  
@@ -190,6 +193,11 @@ int main(int argc, char* argv[]) {
   if(IO_GetButton(5)) playFavorite(3);
   // (4) button
   if(IO_GetButton(6)) playFavorite(4);
+  
+  // shutdown (stop button long)
+  if(IO_GetButtonLong(2)) {
+    Screen_Goto(SCREEN_SHUTDOWN); 
+  }
   
   Screen_Draw();
   GLCDD_BacklightUpdate();

@@ -4,7 +4,7 @@
 # Creation Date: 2012-08-31
 # Copyright: (c) 2012 by Michael Schwarz
 
-OBJ=firmware.o menu.o lcd.o language.o lcd2bmp.o io.o ip.o disk.o screens.o settings.o arraylist.o screen_info.o screen_main.o screen_now_playing.o screen_stations.o screen_usb.o fonts/fnt_dejavu.o fonts/fnt_dejavu_9.o fonts/fnt_dejavu_9_b.o fonts/fnt_silkscreen_8.o images/info.o images/playing.o images/playlist.o images/song.o images/station.o images/up.o images/usb.o
+OBJ=firmware.o menu.o lcd.o language.o lcd2bmp.o io.o ip.o disk.o screens.o settings.o arraylist.o screen_info.o screen_main.o screen_now_playing.o screen_stations.o screen_usb.o screen_shutdown.o fonts/fnt_dejavu.o fonts/fnt_dejavu_9.o fonts/fnt_dejavu_9_b.o fonts/fnt_silkscreen_8.o images/info.o images/playing.o images/playlist.o images/song.o images/station.o images/up.o images/usb.o
 TARGET=firmware
 CFLAGS=-g -Wall -O3 -lwiringPi
 CC=gcc
