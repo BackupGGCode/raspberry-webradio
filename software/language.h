@@ -41,7 +41,8 @@ typedef enum {
 	WIFI_SCAN_TITLE,
 	WIFI_ENTER_PWD,
 	WIFI_CONNECTING,
-	PLEASE_WAIT
+	PLEASE_WAIT,
+	SCANNING
 } Language_String;
 
 int Language_Init(char* lang);
