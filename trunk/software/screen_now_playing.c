@@ -49,7 +49,7 @@ void draw_NowPlaying() {
   fclose(f);
  
   r.y = 44;
-  if(strlen(f) <= 2) GLCDD_Print(fnt_dejavu_9, &r, _lng(NO_STATION)); else GLCDD_Print(fnt_dejavu_9, &r, buffer);
+  if(strlen(buffer) <= 2) GLCDD_Print(fnt_dejavu_9, &r, _lng(NO_STATION)); else GLCDD_Print(fnt_dejavu_9, &r, buffer);
   
   // we play from usb and can therefore skip the song
   if(strncmp(buffer, _lng(USB), strlen(_lng(USB))) == 0) {
