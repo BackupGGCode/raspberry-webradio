@@ -25,6 +25,7 @@ extern const uint8_t img_space[];
 extern const uint8_t img_numbers[];
 extern const uint8_t img_settings[];
 extern const uint8_t img_wifi[];
+extern const uint8_t img_language[];
 
 #endif
 
