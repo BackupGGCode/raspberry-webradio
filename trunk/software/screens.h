@@ -26,6 +26,7 @@ typedef enum {
 	SCREEN_INFO,
 	SCREEN_STATIONS,
 	SCREEN_USB,
+	SCREEN_SHUTDOWN,
 	SCREEN_END
 } Screen;
 

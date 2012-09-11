@@ -1,0 +1,18 @@
+///////////////////////////////////////////////////////////////
+//
+//  Shutdown
+//
+//  11.09.2012 - Michael Schwarz
+//
+///////////////////////////////////////////////////////////////  
+
+#ifndef _SCREEN_SHUTDOWN_H_
+#define _SCREEN_SHUTDOWN_H_
+
+#include "firmware.h"
+
+void init_Shutdown();
+void draw_Shutdown();
+
+#endif
+
