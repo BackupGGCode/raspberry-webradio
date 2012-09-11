@@ -9,6 +9,7 @@
 #include "firmware.h"
 
 
+// ---------------------------------------------------------------------------
 GLCDD_Font* createFont(const uint8_t* name) {
 	GLCDD_Font* font = (GLCDD_Font*)malloc(sizeof(GLCDD_Font));
 	font->name = (uint8_t*)name;
@@ -16,20 +17,36 @@ GLCDD_Font* createFont(const uint8_t* name) {
 	return font;
 }
 
+// ---------------------------------------------------------------------------
 int cleanup(void) {
  printf("Goodbye!\r\n");
  exit(0);
 }
 
+// ---------------------------------------------------------------------------
+void resetMetaInfo() {
+ // reset current song
+ FILE* f = fopen(Settings_Get("files", "song"), "w");
+ fprintf(f, " - ");
+ fclose(f);
+ f = fopen(Settings_Get("files", "current_station"), "w");
+ fprintf(f, "\n");
+ fclose(f);
+}
+
+// ---------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
  signal(SIGINT, (sig_t)cleanup);
 
  // load settings file
+ char* settings_file = NULL;
  int settings = 0;
  if(argc == 2) {
+   settings_file = argv[1];
    settings = Settings_Load(argv[1]);
  } 
  if(!settings) {
+   settings_file = "default.conf";
    if(!Settings_Load("default.conf")) {
       printf("%s\r\n", _lng(ERROR_LOADING_SETTINGS));
       return 0;
@@ -88,6 +105,7 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_WIFI_SCAN, init_WifiScan, draw_WifiScan, exit_WifiScan);
  Screen_Add(SCREEN_WIFI_AUTH, init_WifiAuth, draw_WifiAuth, NULL);
  Screen_Add(SCREEN_WIFI_CONNECT, init_WifiConnect, draw_WifiConnect, NULL);
+ Screen_Add(SCREEN_LANGUAGE, init_Language, draw_Language, exit_Language);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
@@ -97,14 +115,10 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_WIFI_SCAN, 1); 
  Screen_SetRefreshTimeout(SCREEN_WIFI_AUTH, 10);
  Screen_SetRefreshTimeout(SCREEN_WIFI_CONNECT, 1);
+ Screen_SetRefreshTimeout(SCREEN_LANGUAGE, 10);
  
- // reset current song
- FILE* f = fopen(Settings_Get("files", "song"), "w");
- fprintf(f, " - ");
- fclose(f);
- f = fopen(Settings_Get("files", "current_station"), "w");
- fprintf(f, "%s\r\n", _lng(NO_STATION));
- fclose(f);
+ // reset song info
+ resetMetaInfo();
  
  // start ui
  Screen_Goto(SCREEN_MAIN);
@@ -170,6 +184,9 @@ int main(int argc, char* argv[]) {
       } else if(selection == 1) {
 	// goto wifi scanning screen
 	Screen_Goto(SCREEN_WIFI_SCAN);
+      } else if(selection == 2) {
+	// goto language selection
+	Screen_Goto(SCREEN_LANGUAGE);
       }
   }
   else if(screen == SCREEN_WIFI_SCAN) {
@@ -189,6 +206,27 @@ int main(int argc, char* argv[]) {
 	Screen_Goto(SCREEN_WIFI_CONNECT);
       }
   }
+  else if(screen == SCREEN_LANGUAGE) {
+      // change language
+      int selection = Menu_IsChosen(menu_language);
+      if(selection != -1) {
+	char disp[64];
+	int i;
+	strcpy(disp, Menu_GetItemText(menu_language, selection));
+	for(i = strlen(disp) - 1; i >= 0; i--) {
+	  if(disp[i] == ')') disp[i] = 0;
+	  if(disp[i] == '(') {
+	   i++;
+	   break;
+	  }
+	}
+	Settings_Add("gui", "language", &disp[i]);
+	Language_Cleanup();
+	Language_Init(&disp[i]);
+	Settings_Save(settings_file);
+	Screen_Goto(SCREEN_SETTINGS);
+      }
+  }
 
   // home button
   if(IO_GetButton(1)) Screen_Goto(SCREEN_MAIN);
@@ -200,6 +238,7 @@ int main(int argc, char* argv[]) {
       char cmd[128];
       sprintf(cmd, "%s &", Settings_Get("programs", "stop"));
       ignore_result(system(cmd));
+      resetMetaInfo();
     } else {
       // play folder
       int i;

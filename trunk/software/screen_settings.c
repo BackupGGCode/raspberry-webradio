@@ -16,9 +16,11 @@ void init_Settings() {
   id = Menu_AddItem(menu_settings, _lng(INFO));
   Menu_AddItemImage(menu_settings, id, img_info, 10, 9);
 
-  
   id = Menu_AddItem(menu_settings, _lng(WIFI));
   Menu_AddItemImage(menu_settings, id, img_wifi, 9, 10);
+  
+  id = Menu_AddItem(menu_settings, _lng(LANGUAGE));
+  Menu_AddItemImage(menu_settings, id, img_language, 10, 10);
   
   Menu_SetAutoIO(menu_settings, 1);
   Menu_SetBorder(menu_settings, BORDER_NONE);
