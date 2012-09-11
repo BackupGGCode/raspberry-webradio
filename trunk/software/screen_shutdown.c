@@ -8,13 +8,15 @@
 
 #include "screen_shutdown.h"
 
+// ---------------------------------------------------------------------------
 void init_Shutdown() {
-    system("sync");
+    ignore_result(system("sync"));
     GLCDD_BacklightReset();
-    system("shutdown -P now");
+    ignore_result(system("shutdown -P now"));
     GLCDD_BacklightReset();
 }
 
+// ---------------------------------------------------------------------------
 void draw_Shutdown() {
     GLCDD_Rect r;
     r.x = SCREEN_W / 2 - GLCDD_StringWidth(fnt_dejavu_9b, _lng(GOODBYE)) / 2;

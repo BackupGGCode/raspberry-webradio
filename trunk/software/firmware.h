@@ -32,6 +32,7 @@ char* USB_PATH;
 #include "ip.h"
 #include "disk.h"
 #include "screens.h"
+#include "keyboard.h"
 
 // images
 #include "images.h"
@@ -50,5 +51,9 @@ GLCDD_Font* fnt_silkscreen_8;
 #include "screen_stations.h"
 #include "screen_usb.h"
 #include "screen_shutdown.h"
+#include "screen_settings.h"
+#include "screen_wifi_scan.h"
+#include "screen_wifi_auth.h"
+#include "screen_wifi_connect.h"
 
 #endif

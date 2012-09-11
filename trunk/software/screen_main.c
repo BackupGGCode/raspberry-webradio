@@ -22,8 +22,8 @@ void init_Main() {
   id = Menu_AddItem(menu_main, _lng(USB));
   Menu_AddItemImage(menu_main, id, img_usb, 10, 8);
   
-  id = Menu_AddItem(menu_main, _lng(INFO));
-  Menu_AddItemImage(menu_main, id, img_info, 10, 9);
+  id = Menu_AddItem(menu_main, _lng(SETTINGS));
+  Menu_AddItemImage(menu_main, id, img_settings, 10, 9);
   
   Menu_SetAutoIO(menu_main, 1);
   Menu_SetBorder(menu_main, BORDER_NONE);
