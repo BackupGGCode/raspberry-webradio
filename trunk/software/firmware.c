@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_STATIONS, 10);
  Screen_SetRefreshTimeout(SCREEN_USB, 1);
  Screen_SetRefreshTimeout(SCREEN_SHUTDOWN, 10);
- Screen_SetRefreshTimeout(SCREEN_WIFI_SCAN, 10); 
+ Screen_SetRefreshTimeout(SCREEN_WIFI_SCAN, 1); 
  Screen_SetRefreshTimeout(SCREEN_WIFI_AUTH, 10);
  Screen_SetRefreshTimeout(SCREEN_WIFI_CONNECT, 1);
  
