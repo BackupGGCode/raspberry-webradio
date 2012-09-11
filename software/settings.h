@@ -19,4 +19,7 @@ char* Settings_Get(char* category, char* key);
 int Settings_Add(char* category, char* key, char* value);
 int Settings_Save(char* file);
 
+// useful function
+char* trim(char* str);
+
 #endif

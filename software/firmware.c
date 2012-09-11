@@ -84,12 +84,19 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_INFO, NULL, draw_Info, NULL);
  Screen_Add(SCREEN_USB, init_USB, draw_USB, NULL);
  Screen_Add(SCREEN_SHUTDOWN, init_Shutdown, draw_Shutdown, NULL);
+ Screen_Add(SCREEN_SETTINGS, init_Settings, draw_Settings, exit_Settings);
+ Screen_Add(SCREEN_WIFI_SCAN, init_WifiScan, draw_WifiScan, exit_WifiScan);
+ Screen_Add(SCREEN_WIFI_AUTH, init_WifiAuth, draw_WifiAuth, NULL);
+ Screen_Add(SCREEN_WIFI_CONNECT, init_WifiConnect, draw_WifiConnect, NULL);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
  Screen_SetRefreshTimeout(SCREEN_STATIONS, 10);
  Screen_SetRefreshTimeout(SCREEN_USB, 1);
  Screen_SetRefreshTimeout(SCREEN_SHUTDOWN, 10);
+ Screen_SetRefreshTimeout(SCREEN_WIFI_SCAN, 10); 
+ Screen_SetRefreshTimeout(SCREEN_WIFI_AUTH, 10);
+ Screen_SetRefreshTimeout(SCREEN_WIFI_CONNECT, 1);
  
  // reset current song
  FILE* f = fopen(Settings_Get("files", "song"), "w");
@@ -130,12 +137,12 @@ int main(int argc, char* argv[]) {
       Screen_Goto(SCREEN_USB);
     } else if(selection == 3) {
       // goto info screen
-      Screen_Goto(SCREEN_INFO);
+      Screen_Goto(SCREEN_SETTINGS);
     }
   }
   else if(screen == SCREEN_INFO) {
     if(IO_GetButton(0)) {
-      Screen_Goto(SCREEN_MAIN);
+      Screen_Goto(SCREEN_SETTINGS);
     }
   }
   else if(screen == SCREEN_STATIONS) {
@@ -154,6 +161,33 @@ int main(int argc, char* argv[]) {
   else if(screen == SCREEN_NOW_PLAYING) {
     // if at now playing screen, backlight is always on
     if(keep_light_when_playing) GLCDD_BacklightReset(); 
+  }
+  else if(screen == SCREEN_SETTINGS) {
+      int selection = Menu_IsChosen(menu_settings);
+      if(selection == 0) {
+	// goto info screen
+	Screen_Goto(SCREEN_INFO);
+      } else if(selection == 1) {
+	// goto wifi scanning screen
+	Screen_Goto(SCREEN_WIFI_SCAN);
+      }
+  }
+  else if(screen == SCREEN_WIFI_SCAN) {
+      int selection = Menu_IsChosen(menu_wifi_scan);
+      if(selection != -1) {
+	// save ssid
+	Settings_Add("wifi", "ssid", Menu_GetItemText(menu_wifi_scan, selection));
+	// go to authentification
+	Screen_Goto(SCREEN_WIFI_AUTH);
+      }
+  }
+  else if(screen == SCREEN_WIFI_AUTH) {
+      if(Keyboard_IsConfirmed()) {
+	// connect to wifi network
+	Settings_Add("wifi", "pwd", Keyboard_GetText());
+	printf("Connecting to '%s' with key '%s'\r\n", Settings_Get("wifi", "ssid"), Settings_Get("wifi", "pwd"));
+	Screen_Goto(SCREEN_WIFI_CONNECT);
+      }
   }
 
   // home button
@@ -200,6 +234,7 @@ int main(int argc, char* argv[]) {
   }
   
   Screen_Draw();
+
   GLCDD_BacklightUpdate();
   
   usleep(100);

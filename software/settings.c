@@ -49,6 +49,7 @@ char* trim(char* str) {
 	return str;
 }
 
+// ---------------------------------------------------------------------------
 void addCategory(char* name) {
     settings->category = (SettingsCat*)realloc(settings->category, sizeof(SettingsCat) * (settings->cats + 1));
     settings->category[settings->cats].vals = 0;
@@ -58,6 +59,7 @@ void addCategory(char* name) {
     settings->cats++;
 }
 
+// ---------------------------------------------------------------------------
 void addValue(int current_cat, char* key, char* value) {
 			// allocate memory for new key-value pair
 			settings->category[current_cat].values = (SettingsSetting*)realloc(settings->category[current_cat].values,
@@ -158,7 +160,7 @@ char* Settings_Get(char* category, char* key) {
 	  if(strcmp(category, settings->category[cat].name) == 0) {
 	     for(val = 0; val < settings->category[cat].vals; val++) {
 	       if(strcmp(settings->category[cat].values[val].key, key) == 0) {
-            return settings->category[cat].values[val].value;
+		  return settings->category[cat].values[val].value;
 	       }
 	     }
 	     return NULL;
@@ -177,21 +179,38 @@ int Settings_Add(char* category, char* key, char* value) {
     strcpy(s_cat, category);
     strcpy(s_key, key);
     strcpy(s_val, value);
-
+    
     for(cat = 0; cat < settings->cats; cat++) {
         if(strcmp(category, settings->category[cat].name) == 0) {
             cat_found = cat;
             break;
         }
     }
+    
+    int found = 0;
+    
     // need to add this category
     if(cat_found == -1) {
         addCategory(s_cat);
         cat_found = settings->cats - 1;
         //printf("add %s\r\n", s_cat);
+    } else {
+      // check if this key already exists
+      int val;
+      for(val = 0; val < settings->category[cat_found].vals; val++) {
+	if(strcmp(settings->category[cat_found].values[val].key, s_key) == 0) {
+	  found = 1;
+	  free(settings->category[cat_found].values[val].value);
+	  free(s_key);
+	  free(s_cat);
+	  settings->category[cat_found].values[val].value = s_val;
+	  break;
+	}
+      }
     }
+    
     // add key-value pair
-    addValue(cat_found, s_key, s_val);
+    if(!found) addValue(cat_found, s_key, s_val);
     return 1;
 }
 

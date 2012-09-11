@@ -138,6 +138,10 @@ echo
 chown root /home/pi/firmware
 chmod 4755 /home/pi/firmware
 chmod +x /home/pi/*.sh
+chown root /home/pi/wifi_connect.sh
+chown root /home/pi/wifi_scan.sh
+chmod 4755 /home/pi/wifi_connect.sh
+chmod 4755 /home/pi/wifi_scan.sh
 
 # copy language files
 echo
