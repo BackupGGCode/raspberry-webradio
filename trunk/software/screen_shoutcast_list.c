@@ -10,12 +10,24 @@
 
 char ShoutcastUrl[256];
 char ShoutcastGenreParent[16];
+char ShoutcastCurGenre[64];
 ArrayList* ShoutcastList;
 
 // ---------------------------------------------------------------------------
 void setStationsParentGenre(char* genre) {
   strcpy(ShoutcastGenreParent, genre); 
 }
+
+// ---------------------------------------------------------------------------
+void setCurrentGenre(char* genre) {
+  strcpy(ShoutcastCurGenre, genre);
+}
+
+// ---------------------------------------------------------------------------
+char* getCurrentGenre() {
+  return ShoutcastCurGenre;
+}
+
 
 // ---------------------------------------------------------------------------
 char* getStationsParentGenre() {
@@ -51,6 +63,7 @@ StationInfo* parseShoutcastList(ShoutcastStation* station) {
       break;
     }
   }
+  url = trim(url);
   fclose(f);
    
   if(url != NULL) {
@@ -150,6 +163,14 @@ void init_ShoutcastList() {
     int id = Menu_AddItem(menu_station_list, ((ShoutcastStation*)AList_Get(ShoutcastList, i))->name);
     Menu_AddItemTag(menu_station_list, id, (void*)i);
   }
+  
+  // play or favorite menu
+  menu_play_fav = Menu_Create(fnt_silkscreen_8, 64, 32);
+  Menu_SetAutoIO(menu_play_fav, 1);
+  Menu_SetBorder(menu_play_fav, BORDER_SOLID);
+  Menu_AddItem(menu_play_fav, _lng(PLAY));
+  Menu_AddItem(menu_play_fav, _lng(AS_FAVORITE));
+  Menu_AddItem(menu_play_fav, _lng(CANCEL));
 }
 
 
@@ -158,6 +179,7 @@ void draw_ShoutcastList() {
   Screen_DrawBorder(_lng(SHOUTCAST_TITLE));
   
   Menu_Draw(menu_station_list, 1, 8);
+  if(!Menu_GetAutoIO(menu_station_list)) Menu_Draw(menu_play_fav, 32, 16);
 }
 
 // ---------------------------------------------------------------------------

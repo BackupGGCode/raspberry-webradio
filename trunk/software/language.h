@@ -52,7 +52,10 @@ typedef enum {
 	SHOUTCAST_TOP,
 	SHOUTCAST_RANDOM,
 	GENRE,
-	GENRE_BACK
+	GENRE_BACK,
+	PLAY,
+	AS_FAVORITE,
+	CANCEL
 } Language_String;
 
 int Language_Init(char* lang);

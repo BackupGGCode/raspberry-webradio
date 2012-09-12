@@ -18,12 +18,15 @@ typedef struct {
 } ShoutcastStation;
 
 Menu_Info* menu_station_list;
+Menu_Info* menu_play_fav;
 
 void setShoutcastListUrl(char* url);
 ShoutcastStation* getChosenStation(int id);
 StationInfo* parseShoutcastList(ShoutcastStation* station);
 void setStationsParentGenre(char* genre);
 char* getStationsParentGenre();
+void setCurrentGenre(char* genre);
+char* getCurrentGenre();
 
 void init_ShoutcastList();
 void draw_ShoutcastList();

@@ -31,19 +31,27 @@ ArrayList* readStations() {
   ArrayList* stations = AList_Create();
   
   while(fgets(buffer, 256, f) != NULL) {
-      if(strlen(buffer) < 3) continue;
+      if(strlen(buffer) < 4) continue;
       
       StationInfo* info = (StationInfo*)malloc(sizeof(StationInfo));
       ptr = strtok(buffer, "|");
+      if(ptr == NULL) continue;
       info->name = (char*)malloc(sizeof(char) * (1 + strlen(ptr)));
       strcpy(info->name, ptr);
       ptr = strtok(NULL, "|");
+      if(ptr == NULL) continue;      
       info->url = (char*)malloc(sizeof(char) * (1 + strlen(ptr)));
       strcpy(info->url, ptr);
       ptr = strtok(NULL, "|");
-      info->genre = (char*)malloc(sizeof(char) * (1 + strlen(ptr)));
-      strcpy(info->genre, ptr);
+      if(ptr != NULL) {
+        info->genre = (char*)malloc(sizeof(char) * (1 + strlen(ptr)));
+        strcpy(info->genre, ptr);
+      } else {
+	info->genre = (char*)malloc(sizeof(char));
+	info->genre[0] = '\0';
+      }
       ptr = strtok(NULL, "|");
+      if(ptr == NULL) continue;      
       info->tag = '\0';
       if(ptr != NULL) info->tag = ptr[0];
       
@@ -68,6 +76,17 @@ void writeStations(ArrayList* stations) {
  fclose(f);
 }
 
+// ---------------------------------------------------------------------------
+void freeStations(ArrayList* stations) {
+ int i;
+ for(i = 0; i < AList_Length(stations); i++) {
+  StationInfo* info = AList_Get(stations, i);
+  free(info->name);
+  free(info->url);
+  free(info->genre);
+  free(info);
+ }
+}
 
 // ---------------------------------------------------------------------------
 void asFavorite(int fav_id) {
@@ -85,9 +104,12 @@ void asFavorite(int fav_id) {
      Menu_SetTitleTag(menu_stations, i, '\0');
    }
    if(i == sel_id) info->tag = tag;
+   
   }
   
   writeStations(stations);
+  
+  freeStations(stations);
   AList_Destroy(stations);
 }
 
@@ -105,6 +127,8 @@ void playFavorite(int id) {
    }
  }
  
+ freeStations(stations);
+ 
  AList_Destroy(stations);
 }
 
@@ -118,9 +142,10 @@ void init_Stations() {
 	ArrayList* stations = readStations();
 	int i;
 	for(i = 0; i < AList_Length(stations); i++) {
-	  int s_id = Menu_AddItem(menu_stations, ((StationInfo*)AList_Get(stations, i))->name);
-	  Menu_AddItemTag(menu_stations, s_id, AList_Get(stations, i));
-	  char tag = ((StationInfo*)AList_Get(stations, i))->tag;
+	  StationInfo* info = AList_Get(stations, i);
+	  int s_id = Menu_AddItem(menu_stations, info->name);
+	  Menu_AddItemTag(menu_stations, s_id, info);
+	  char tag = info->tag;
 	  if(tag != '\0' && tag != '0') Menu_SetTitleTag(menu_stations, s_id, tag);
 	}
 	AList_Destroy(stations);
