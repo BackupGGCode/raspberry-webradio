@@ -10,6 +10,7 @@
 
 int WifiConnect_First;
 
+// ---------------------------------------------------------------------------
 void init_WifiConnect() {
 #ifndef SIMULATE
   FILE* network = fopen("/etc/network/interfaces", "w");
@@ -30,6 +31,7 @@ void init_WifiConnect() {
   WifiConnect_First = 1;
 }
 
+// ---------------------------------------------------------------------------
 void draw_WifiConnect() {
       Screen_DrawBorder(_lng(WIFI_CONNECTING));
       GLCDD_Rect r;      

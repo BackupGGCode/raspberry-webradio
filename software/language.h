@@ -44,7 +44,9 @@ typedef enum {
 	PLEASE_WAIT,
 	SCANNING,
 	LANGUAGE,
-	LANGUAGE_TITLE
+	LANGUAGE_TITLE,
+	VOLUME,
+	VOLUME_TITLE
 } Language_String;
 
 int Language_Init(char* lang);

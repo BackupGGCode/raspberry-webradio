@@ -56,5 +56,6 @@ GLCDD_Font* fnt_silkscreen_8;
 #include "screen_wifi_auth.h"
 #include "screen_wifi_connect.h"
 #include "screen_language.h"
+#include "screen_volume.h"
 
 #endif
