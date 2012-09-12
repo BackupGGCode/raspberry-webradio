@@ -19,6 +19,9 @@ void init_Main() {
   id = Menu_AddItem(menu_main, _lng(STATIONS));
   Menu_AddItemImage(menu_main, id, img_station, 10, 10);
   
+  id = Menu_AddItem(menu_main, _lng(SHOUTCAST));
+  Menu_AddItemImage(menu_main, id, img_shoutcast, 10, 10);
+  
   id = Menu_AddItem(menu_main, _lng(USB));
   Menu_AddItemImage(menu_main, id, img_usb, 10, 8);
   

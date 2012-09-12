@@ -11,12 +11,6 @@
 
 #include "firmware.h"
 
-typedef struct {
-  char* name;
-  char* genre;
-  char* url;
-  char tag;
-} StationInfo;
 
 extern Menu_Info* menu_stations;
 

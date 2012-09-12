@@ -46,7 +46,13 @@ typedef enum {
 	LANGUAGE,
 	LANGUAGE_TITLE,
 	VOLUME,
-	VOLUME_TITLE
+	VOLUME_TITLE,
+	SHOUTCAST_TITLE,
+	SHOUTCAST,
+	SHOUTCAST_TOP,
+	SHOUTCAST_RANDOM,
+	GENRE,
+	GENRE_BACK
 } Language_String;
 
 int Language_Init(char* lang);
