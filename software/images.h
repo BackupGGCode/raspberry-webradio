@@ -27,6 +27,7 @@ extern const uint8_t img_settings[];
 extern const uint8_t img_wifi[];
 extern const uint8_t img_language[];
 extern const uint8_t img_volume[];
+extern const uint8_t img_shoutcast[];
 
 #endif
 

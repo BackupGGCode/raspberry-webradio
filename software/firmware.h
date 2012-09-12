@@ -33,6 +33,7 @@ char* USB_PATH;
 #include "disk.h"
 #include "screens.h"
 #include "keyboard.h"
+#include "download.h"
 
 // images
 #include "images.h"
@@ -43,6 +44,14 @@ char* USB_PATH;
 GLCDD_Font* fnt_dejavu_9;
 GLCDD_Font* fnt_dejavu_9b;
 GLCDD_Font* fnt_silkscreen_8;
+
+
+typedef struct {
+  char* name;
+  char* genre;
+  char* url;
+  char tag;
+} StationInfo;
 
 // screens
 #include "screen_main.h"
@@ -57,5 +66,8 @@ GLCDD_Font* fnt_silkscreen_8;
 #include "screen_wifi_connect.h"
 #include "screen_language.h"
 #include "screen_volume.h"
+#include "screen_shoutcast.h"
+#include "screen_shoutcast_list.h"
+#include "screen_shoutcast_genre.h"
 
 #endif

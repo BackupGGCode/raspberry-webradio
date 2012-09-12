@@ -81,6 +81,15 @@ then
   sudo apt-get install libcurl4-openssl-dev
 fi
 
+if [ ! -f /usr/include/libxml2/libxml/parser.h ];
+then
+  echo
+  echo "Installing libxml2"
+  echo
+  sudo apt-get install libxml2-dev
+fi
+
+
 # copy mobile page
 echo
 echo "Copy mobile page to webserver directory"

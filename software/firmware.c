@@ -107,6 +107,9 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_WIFI_CONNECT, init_WifiConnect, draw_WifiConnect, NULL);
  Screen_Add(SCREEN_LANGUAGE, init_Language, draw_Language, exit_Language);
  Screen_Add(SCREEN_VOLUME, init_Volume, draw_Volume, NULL);
+ Screen_Add(SCREEN_SHOUTCAST, init_Shoutcast, draw_Shoutcast, exit_Shoutcast);
+ Screen_Add(SCREEN_SHOUTCAST_LIST, init_ShoutcastList, draw_ShoutcastList, exit_ShoutcastList);
+ Screen_Add(SCREEN_SHOUTCAST_GENRE, init_ShoutcastGenre, draw_ShoutcastGenre, exit_ShoutcastGenre);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
@@ -118,7 +121,10 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_WIFI_CONNECT, 1);
  Screen_SetRefreshTimeout(SCREEN_LANGUAGE, 10);
  Screen_SetRefreshTimeout(SCREEN_VOLUME, 10);
- 
+ Screen_SetRefreshTimeout(SCREEN_SHOUTCAST, 10);
+ Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_LIST, 10);
+ Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_GENRE, 10);
+  
  // reset song info
  resetMetaInfo();
  
@@ -149,9 +155,12 @@ int main(int argc, char* argv[]) {
       // goto stations screen
       Screen_Goto(SCREEN_STATIONS);	
     } else if(selection == 2) {
+      // goto shoutcast browser
+      Screen_Goto(SCREEN_SHOUTCAST);
+    } else if(selection == 3) {
       // goto usb screen
       Screen_Goto(SCREEN_USB);
-    } else if(selection == 3) {
+    } else if(selection == 4) {
       // goto info screen
       Screen_Goto(SCREEN_SETTINGS);
     }
@@ -236,6 +245,70 @@ int main(int argc, char* argv[]) {
       if(IO_GetButton(0)) {
 	// go back to settings
 	Screen_Goto(SCREEN_SETTINGS);
+      }
+  }
+  
+  else if(screen == SCREEN_SHOUTCAST) {
+      int selection = Menu_IsChosen(menu_shoutcast);
+      if(selection == 0) {
+	// go to shoutcast top stations
+	setShoutcastListUrl("http://api.shoutcast.com/legacy/Top500?k=so1N15vhCB78Z6k4&limit=25&mt=audio/mpeg");
+	setStationsParentGenre("X");
+	Screen_Goto(SCREEN_SHOUTCAST_LIST);
+      } 
+      else if(selection == 2) {
+	// go to genre list
+	setShoutcastGenreParent("0");
+	Screen_Goto(SCREEN_SHOUTCAST_GENRE);
+      }
+  }
+  
+  else if(screen == SCREEN_SHOUTCAST_GENRE) {
+      int selection = Menu_IsChosen(menu_genres);
+      if(selection != -1) {
+	if(selection == 0) { // back
+	  if(strcmp(getShoutcastGenreParent(), "0") == 0) { // main genres
+	    Screen_Goto(SCREEN_SHOUTCAST);
+	  } else { // sub genre -> go back to main genres
+	    setShoutcastGenreParent("0");
+	    Screen_Goto(SCREEN_SHOUTCAST_GENRE);
+	  }
+	} else { // list stations or sub genre
+	  ShoutcastGenre* info = getChosenGenre((int)Menu_GetItemTag(menu_genres, selection));
+	  // show sub genres
+	  if(info->has_children) {
+	    setStationsParentGenre(info->id);
+	    setShoutcastGenreParent(info->id);
+	    Screen_Goto(SCREEN_SHOUTCAST_GENRE);
+	  } else { // show stations
+	    char buffer[128];
+	    sprintf(buffer, "http://api.shoutcast.com/legacy/genresearch?k=so1N15vhCB78Z6k4&f=xml&genre=%s", info->name);
+	    printf("Stations: %s\r\n", buffer);
+	    setShoutcastListUrl(buffer);
+	    Screen_Goto(SCREEN_SHOUTCAST_LIST);
+	  }
+	}
+      }
+  }
+  
+  else if(screen == SCREEN_SHOUTCAST_LIST) {
+      int selection = Menu_IsChosen(menu_station_list);
+      if(selection != -1) {
+	 if(selection == 0) { // back
+	    if(strcmp(getStationsParentGenre(), "X") == 0) { // go to shoutcast menu
+	      Screen_Goto(SCREEN_SHOUTCAST); 
+	    } else { // go to genre list
+	      setShoutcastGenreParent(getStationsParentGenre());
+	      Screen_Goto(SCREEN_SHOUTCAST_GENRE);
+	    }
+	 } else {	
+	    ShoutcastStation* info =  getChosenStation((int)Menu_GetItemTag(menu_station_list, selection));
+	    StationInfo* station = parseShoutcastList(info);
+	    playStation(station);
+	    printf("play %s @ 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=%s'\r\n", info->name, info->id);
+	    free(station->url);
+	    free(station);
+	 }
       }
   }
 
