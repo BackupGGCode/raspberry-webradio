@@ -106,6 +106,7 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_WIFI_AUTH, init_WifiAuth, draw_WifiAuth, NULL);
  Screen_Add(SCREEN_WIFI_CONNECT, init_WifiConnect, draw_WifiConnect, NULL);
  Screen_Add(SCREEN_LANGUAGE, init_Language, draw_Language, exit_Language);
+ Screen_Add(SCREEN_VOLUME, init_Volume, draw_Volume, NULL);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
@@ -116,6 +117,7 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_WIFI_AUTH, 10);
  Screen_SetRefreshTimeout(SCREEN_WIFI_CONNECT, 1);
  Screen_SetRefreshTimeout(SCREEN_LANGUAGE, 10);
+ Screen_SetRefreshTimeout(SCREEN_VOLUME, 10);
  
  // reset song info
  resetMetaInfo();
@@ -187,6 +189,9 @@ int main(int argc, char* argv[]) {
       } else if(selection == 2) {
 	// goto language selection
 	Screen_Goto(SCREEN_LANGUAGE);
+      } else if(selection == 3) {
+	// goto volume adjustment
+	Screen_Goto(SCREEN_VOLUME);
       }
   }
   else if(screen == SCREEN_WIFI_SCAN) {
@@ -224,6 +229,12 @@ int main(int argc, char* argv[]) {
 	Language_Cleanup();
 	Language_Init(&disp[i]);
 	Settings_Save(settings_file);
+	Screen_Goto(SCREEN_SETTINGS);
+      }
+  }
+  else if(screen == SCREEN_VOLUME) {
+      if(IO_GetButton(0)) {
+	// go back to settings
 	Screen_Goto(SCREEN_SETTINGS);
       }
   }

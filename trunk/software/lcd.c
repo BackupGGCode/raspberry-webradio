@@ -243,17 +243,22 @@ void GLCDD_Circle(uint8_t x, uint8_t y, uint8_t r, uint8_t filled) {
 
 // ---------------------------------------------------------------------------
 void GLCDD_Rectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t filled) {
- uint8_t xx, yy;
- for(xx = x; xx <= x+w; xx++) {
-  for(yy = y; yy <= y+h; yy++) {
-   if(filled) {
-    GLCDD_SetPixel(xx, yy);           
-   } else {
-    if(xx == x || xx == x+w-1 || yy == y || yy == y+h-1) {
-     GLCDD_SetPixel(xx, yy);      
+ int xx, yy;
+ if(filled) {
+   for(xx = x; xx <= x+w; xx++) {
+    for(yy = y; yy <= y+h; yy++) {
+      GLCDD_SetPixel(xx, yy);           
     }       
    }
-  }       
+ } else {
+  for(xx = x; xx < x+w; xx++) {
+   GLCDD_SetPixel(xx, y);
+   GLCDD_SetPixel(xx, y+h-1);
+  }
+  for(yy = y; yy < y+h; yy++) {
+   GLCDD_SetPixel(x, yy);
+   GLCDD_SetPixel(x+w-1, yy);
+  }
  }
 }
 

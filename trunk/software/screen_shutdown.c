@@ -12,7 +12,7 @@
 void init_Shutdown() {
     ignore_result(system("sync"));
     GLCDD_BacklightReset();
-    ignore_result(system("shutdown -P now"));
+    ignore_result(system("shutdown -h -P now"));
     GLCDD_BacklightReset();
 }
 
