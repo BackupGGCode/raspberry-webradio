@@ -254,6 +254,7 @@ int main(int argc, char* argv[]) {
 	// go to shoutcast top stations
 	setShoutcastListUrl("http://api.shoutcast.com/legacy/Top500?k=so1N15vhCB78Z6k4&limit=25&mt=audio/mpeg");
 	setStationsParentGenre("X");
+	setCurrentGenre(" ");
 	Screen_Goto(SCREEN_SHOUTCAST_LIST);
       } 
       else if(selection == 2) {
@@ -285,6 +286,7 @@ int main(int argc, char* argv[]) {
 	    sprintf(buffer, "http://api.shoutcast.com/legacy/genresearch?k=so1N15vhCB78Z6k4&f=xml&genre=%s", info->name);
 	    printf("Stations: %s\r\n", buffer);
 	    setShoutcastListUrl(buffer);
+	    setCurrentGenre(info->name);
 	    Screen_Goto(SCREEN_SHOUTCAST_LIST);
 	  }
 	}
@@ -292,23 +294,59 @@ int main(int argc, char* argv[]) {
   }
   
   else if(screen == SCREEN_SHOUTCAST_LIST) {
-      int selection = Menu_IsChosen(menu_station_list);
-      if(selection != -1) {
-	 if(selection == 0) { // back
-	    if(strcmp(getStationsParentGenre(), "X") == 0) { // go to shoutcast menu
-	      Screen_Goto(SCREEN_SHOUTCAST); 
-	    } else { // go to genre list
-	      setShoutcastGenreParent(getStationsParentGenre());
-	      Screen_Goto(SCREEN_SHOUTCAST_GENRE);
-	    }
-	 } else {	
-	    ShoutcastStation* info =  getChosenStation((int)Menu_GetItemTag(menu_station_list, selection));
-	    StationInfo* station = parseShoutcastList(info);
-	    playStation(station);
-	    printf("play %s @ 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=%s'\r\n", info->name, info->id);
-	    free(station->url);
-	    free(station);
-	 }
+      if(Menu_GetAutoIO(menu_station_list)) {
+	int selection = Menu_IsChosen(menu_station_list);
+	if(selection != -1) {
+	  if(selection == 0) { // back
+	      if(strcmp(getStationsParentGenre(), "X") == 0) { // go to shoutcast menu
+		Screen_Goto(SCREEN_SHOUTCAST); 
+	      } else { // go to genre list
+		setShoutcastGenreParent(getStationsParentGenre());
+		Screen_Goto(SCREEN_SHOUTCAST_GENRE);
+	      }
+	  } else { // show play/as_favorite/cancel menu
+	      Menu_SetAutoIO(menu_station_list, 0);
+	      Screen_ForceRedraw();
+	  }
+	}
+      } else {
+	int selection = Menu_IsChosen(menu_play_fav);
+	if(selection != -1) {
+	  Menu_SetAutoIO(menu_station_list, 1);
+	  Screen_ForceRedraw();
+	  
+	  if(selection == 0) { // play
+	      ShoutcastStation* info = getChosenStation((int)Menu_GetItemTag(menu_station_list, Menu_GetSelectedItem(menu_station_list)));
+	      StationInfo* station = parseShoutcastList(info);
+	      playStation(station);
+	      printf("play %s @ 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=%s'\r\n", info->name, info->id);
+	      free(station->url);
+	      free(station);
+	  }
+	  else if(selection == 1) { // add to station list
+	      ShoutcastStation* sc_stat = getChosenStation((int)Menu_GetItemTag(menu_station_list, Menu_GetSelectedItem(menu_station_list)));
+	      StationInfo* stat = parseShoutcastList(sc_stat);
+	      
+	      StationInfo* info = (StationInfo*)malloc(sizeof(StationInfo));
+	      info->tag = '\0';
+	      info->name = stat->name;
+	      info->url = stat->url;
+	      info->genre = getCurrentGenre();
+	      
+	      ArrayList* stations = readStations();
+	      AList_Add(stations, info);
+	      writeStations(stations);
+	      AList_Delete(stations, AList_Length(stations) - 1);
+	      freeStations(stations);
+	      AList_Destroy(stations);
+	      free(stat->url);
+	      free(stat);
+	      free(info);
+	  }
+	  else if(selection == 2) { // cancel
+	    // do nothing
+	  } 
+	}
       }
   }
 

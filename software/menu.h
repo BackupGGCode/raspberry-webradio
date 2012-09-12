@@ -76,6 +76,7 @@ void Menu_SetCircular(Menu_Info* menu, uint8_t circular);
 void Menu_SetDrawLines(Menu_Info* menu, uint8_t lines);
 void Menu_SetBorder(Menu_Info* menu, Menu_Border border);
 void Menu_SetAutoIO(Menu_Info* menu, uint8_t auto_io);
+uint8_t Menu_GetAutoIO(Menu_Info* menu);
 int Menu_IsChosen(Menu_Info* menu);
 void Menu_SetScroll(Menu_Info* menu, Menu_Scrolling scroll);
 void Menu_AddItemTag(Menu_Info* menu, int item, void* tag);

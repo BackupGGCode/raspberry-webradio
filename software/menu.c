@@ -140,7 +140,8 @@ void Menu_Draw(Menu_Info* menu, int x, int y) {
 	}
 
 	// clear area
-	GLCDD_ClearEx(x, y, x + menu->width - 1, y + menu->height - 1);
+	if(menu->border == BORDER_SOLID || menu->border == BORDER_ROUNDED) GLCDD_ClearEx(x - 1, y - 1, x + menu->width, y + menu->height);
+	else GLCDD_ClearEx(x, y, x + menu->width - 1, y + menu->height - 1);
 	
 	// draw items
 	int i;
@@ -270,6 +271,12 @@ void Menu_SetBorder(Menu_Info* menu, Menu_Border border) {
 void Menu_SetAutoIO(Menu_Info* menu, uint8_t auto_io) {
 	assert(menu != NULL);
 	menu->auto_io = auto_io;
+}
+
+// ---------------------------------------------------------------------------
+uint8_t Menu_GetAutoIO(Menu_Info* menu) {
+	assert(menu != NULL);
+	return menu->auto_io;
 }
 
 // ---------------------------------------------------------------------------
