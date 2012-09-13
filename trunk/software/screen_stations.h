@@ -18,6 +18,7 @@ void playStation(StationInfo* station);
 ArrayList* readStations();
 void writeStations(ArrayList* stations);
 void freeStations(ArrayList* stations);
+void deleteStation(int index);
 void asFavorite(int fav_id);
 void playFavorite(int id);
 void init_Stations();

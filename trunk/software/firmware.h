@@ -69,5 +69,6 @@ typedef struct {
 #include "screen_shoutcast.h"
 #include "screen_shoutcast_list.h"
 #include "screen_shoutcast_genre.h"
+#include "screen_manage_station.h"
 
 #endif

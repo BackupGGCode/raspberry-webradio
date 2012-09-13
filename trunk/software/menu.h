@@ -71,6 +71,7 @@ int Menu_AddItem(Menu_Info* menu, char* item);
 void Menu_Draw(Menu_Info* menu, int x, int y);
 void Menu_Scroll(Menu_Info* menu, int offset);
 int Menu_GetSelectedItem(Menu_Info* menu);
+void Menu_SetSelectedItem(Menu_Info* menu, int index);
 void Menu_ScrollTo(Menu_Info* menu, int pos);
 void Menu_SetCircular(Menu_Info* menu, uint8_t circular);
 void Menu_SetDrawLines(Menu_Info* menu, uint8_t lines);
@@ -86,5 +87,6 @@ void Menu_AddItemImage(Menu_Info* menu, int item, const uint8_t* image, uint8_t 
 void Menu_EnableImages(Menu_Info* menu, uint8_t enable);
 int Menu_GetItems(Menu_Info* menu);
 void Menu_SetTitleTag(Menu_Info* menu, int item, char tag);
+void Menu_SwapItems(Menu_Info* menu, int item1, int item2);
 
 #endif
