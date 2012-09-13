@@ -59,7 +59,9 @@ typedef enum {
 	MANAGE_STATIONS,
 	STATIONS_MANAGE_TITLE,
 	DELETE,
-	MOVE
+	MOVE,
+	SNOOZE,
+	LOADING
 } Language_String;
 
 int Language_Init(char* lang);

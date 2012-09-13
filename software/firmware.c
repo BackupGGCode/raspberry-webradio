@@ -32,6 +32,9 @@ void resetMetaInfo() {
  f = fopen(Settings_Get("files", "current_station"), "w");
  fprintf(f, "\n");
  fclose(f);
+ f = fopen(Settings_Get("files", "station_details"), "w");
+ fprintf(f, "\n");
+ fclose(f);
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +99,7 @@ int main(int argc, char* argv[]) {
  
  // register screens
  Screen_Add(SCREEN_MAIN, init_Main, draw_Main, exit_Main);
- Screen_Add(SCREEN_NOW_PLAYING, NULL, draw_NowPlaying, NULL);
+ Screen_Add(SCREEN_NOW_PLAYING, init_NowPlaying, draw_NowPlaying, exit_NowPlaying);
  Screen_Add(SCREEN_STATIONS, init_Stations, draw_Stations, exit_Stations);
  Screen_Add(SCREEN_INFO, NULL, draw_Info, NULL);
  Screen_Add(SCREEN_USB, init_USB, draw_USB, NULL);
@@ -126,6 +129,11 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_LIST, 10);
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_GENRE, 10);
  Screen_SetRefreshTimeout(SCREEN_MANAGE_STATION, 10);
+ Screen_ShowLoadingScreen(SCREEN_USB, 1);
+ Screen_ShowLoadingScreen(SCREEN_VOLUME, 1);
+ Screen_ShowLoadingScreen(SCREEN_SHOUTCAST_LIST, 1);
+ Screen_ShowLoadingScreen(SCREEN_SHOUTCAST_GENRE, 1);
+ 
   
  // reset song info
  resetMetaInfo();
@@ -340,6 +348,7 @@ int main(int argc, char* argv[]) {
 	  if(selection == 0) { // play
 	      ShoutcastStation* info = getChosenStation((int)Menu_GetItemTag(menu_station_list, Menu_GetSelectedItem(menu_station_list)));
 	      StationInfo* station = parseShoutcastList(info);
+	      station->genre = getCurrentGenre();
 	      playStation(station);
 	      printf("play %s @ 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=%s'\r\n", info->name, info->id);
 	      free(station->url);

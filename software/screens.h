@@ -14,6 +14,8 @@
 #include <time.h>
 #include "lcd.h"
 #include "menu.h"
+#include "language.h"
+#include "images.h"
 
 #define SCREEN_W 128
 #define SCREEN_H 64
@@ -46,6 +48,7 @@ typedef struct {
 	ScreenFunc exit_fnc;
 	long last_update;
 	int refresh_timeout;
+	int long_init;
 } ScreenInfo;
 
 
@@ -57,6 +60,7 @@ Screen Screen_GetActive();
 void Screen_Draw();
 void Screen_ForceRedraw();
 void Screen_SetRefreshTimeout(Screen id, int refresh_timeout);
+void Screen_ShowLoadingScreen(Screen id, int show);
 void Screen_Cleanup();
 
 #endif

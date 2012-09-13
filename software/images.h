@@ -29,6 +29,7 @@ extern const uint8_t img_language[];
 extern const uint8_t img_volume[];
 extern const uint8_t img_shoutcast[];
 extern const uint8_t img_edit[];
+extern const uint8_t img_load[];
 
 #endif
 

@@ -18,6 +18,10 @@ void playStation(StationInfo* station) {
   FILE* f = fopen(Settings_Get("files", "current_station"), "w");
   fprintf(f, "%s\r\n", station->name);
   fclose(f);
+  
+  f = fopen(Settings_Get("files", "station_details"), "w");
+  fprintf(f, "%s|%s|%s\r\n", station->name, station->url, station->genre);
+  fclose(f);
 }
 
 // ---------------------------------------------------------------------------

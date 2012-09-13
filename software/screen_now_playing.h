@@ -11,6 +11,10 @@
 
 #include "firmware.h"
 
+Menu_Info* menu_now_playing;
+
+void init_NowPlaying();
 void draw_NowPlaying();
+void exit_NowPlaying();
 
 #endif
