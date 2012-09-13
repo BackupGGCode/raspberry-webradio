@@ -120,6 +120,11 @@ void Screen_DrawBorder(char* title) {
  r.h = -1;
  GLCDD_Print(fnt_screen_border, &r, title);
  fnt_screen_border->color = 0;
+ 
+ if(isSnooze()) {
+   GLCDD_ClearEx(SCREEN_W - 12, 1, SCREEN_W - 5, 5);
+   GLCDD_XBMDraw((uint8_t*)img_snooze, SCREEN_W - 12, 1, 8, 5);
+ }
 }
 
 

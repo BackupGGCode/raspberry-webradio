@@ -38,6 +38,15 @@ void resetMetaInfo() {
 }
 
 // ---------------------------------------------------------------------------
+void stopMusic() {
+  // stop music
+  char cmd[128];
+  sprintf(cmd, "%s &", Settings_Get("programs", "stop"));
+  ignore_result(system(cmd));
+  resetMetaInfo(); 
+}
+
+// ---------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
  signal(SIGINT, (sig_t)cleanup);
 
@@ -114,6 +123,7 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_SHOUTCAST_LIST, init_ShoutcastList, draw_ShoutcastList, exit_ShoutcastList);
  Screen_Add(SCREEN_SHOUTCAST_GENRE, init_ShoutcastGenre, draw_ShoutcastGenre, exit_ShoutcastGenre);
  Screen_Add(SCREEN_MANAGE_STATION, init_ManageStation, draw_ManageStation, exit_ManageStation);
+ Screen_Add(SCREEN_SNOOZE, init_Snooze, draw_Snooze, exit_Snooze);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
@@ -129,6 +139,7 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_LIST, 10);
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_GENRE, 10);
  Screen_SetRefreshTimeout(SCREEN_MANAGE_STATION, 10);
+ Screen_SetRefreshTimeout(SCREEN_SNOOZE, 10);
  Screen_ShowLoadingScreen(SCREEN_USB, 1);
  Screen_ShowLoadingScreen(SCREEN_VOLUME, 1);
  Screen_ShowLoadingScreen(SCREEN_SHOUTCAST_LIST, 1);
@@ -457,10 +468,7 @@ int main(int argc, char* argv[]) {
   if(IO_GetButton(2)) {
     if(screen != SCREEN_USB) {
       // stop music
-      char cmd[128];
-      sprintf(cmd, "%s &", Settings_Get("programs", "stop"));
-      ignore_result(system(cmd));
-      resetMetaInfo();
+      stopMusic();
     } else {
       // play folder
       int i;
@@ -478,6 +486,14 @@ int main(int argc, char* argv[]) {
       
       playUSB("/tmp/playlist.m3u");
     }
+  }
+  
+  // end of snooze time
+  if(checkSnoozeStop()) {
+   // stop the music
+   stopMusic();
+   // go to main screen
+   Screen_Goto(SCREEN_MAIN);
   }
   
   // (1) button

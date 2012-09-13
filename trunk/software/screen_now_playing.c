@@ -154,7 +154,11 @@ void draw_NowPlaying() {
     
     int selection = Menu_IsChosen(menu_now_playing);
     if(selection != -1) {
-      if(selection == 2) {
+      if(selection == 1) { 
+	// snooze
+	Screen_Goto(SCREEN_SNOOZE);
+      }      
+      if(selection == 2) { // add as favorite
 	printf("add station '%s' as favorite\r\n", NowPlaying_CurStation.name);
 	// add to favorite list
 	ArrayList* stations = readStations();

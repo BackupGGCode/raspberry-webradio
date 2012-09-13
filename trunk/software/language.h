@@ -61,7 +61,8 @@ typedef enum {
 	DELETE,
 	MOVE,
 	SNOOZE,
-	LOADING
+	LOADING,
+	MINUTES
 } Language_String;
 
 int Language_Init(char* lang);

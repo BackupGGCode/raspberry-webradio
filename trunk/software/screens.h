@@ -16,6 +16,7 @@
 #include "menu.h"
 #include "language.h"
 #include "images.h"
+#include "screen_snooze.h"
 
 #define SCREEN_W 128
 #define SCREEN_H 64
@@ -39,6 +40,7 @@ typedef enum {
 	SCREEN_SHOUTCAST_LIST,
 	SCREEN_SHOUTCAST_GENRE,
 	SCREEN_MANAGE_STATION,
+	SCREEN_SNOOZE,
 	SCREEN_END
 } Screen;
 
