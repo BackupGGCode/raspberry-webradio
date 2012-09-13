@@ -25,12 +25,21 @@ void Screen_Init(const uint8_t* font_border) {
 }
 
 // ---------------------------------------------------------------------------
+void Screen_Loading(Screen id) {
+   GLCDD_Clear();
+   Screen_DrawBorder(_lng(PLEASE_WAIT));
+   if(screens[id].long_init) GLCDD_XBMDraw((uint8_t*)img_load, SCREEN_W / 2 - 15, SCREEN_H / 2 + 4 - 16, 31, 33);
+   GLCDD_Draw();
+}
+
+// ---------------------------------------------------------------------------
 void Screen_Add(Screen id, ScreenFunc init_fnc, ScreenFunc draw_fnc, ScreenFunc exit_fnc) {
 	screens[id].init_fnc = init_fnc;
 	screens[id].draw_fnc = draw_fnc;
 	screens[id].exit_fnc = exit_fnc;
 	screens[id].last_update = 0;
 	screens[id].refresh_timeout = -1;
+	screens[id].long_init = 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -47,6 +56,8 @@ void Screen_Goto(Screen id) {
 		// execute exit function of current screen
 		if(screens[active_screen].exit_fnc != NULL) screens[active_screen].exit_fnc();
 	}
+	// draw loading screen
+	Screen_Loading(id);
 	// execute init function of new screen
 	if(screens[id].init_fnc != NULL) screens[id].init_fnc();
 	// reset last update timer
@@ -84,6 +95,12 @@ void Screen_ForceRedraw() {
 void Screen_SetRefreshTimeout(Screen id, int refresh_timeout) {
 	if(id >= SCREEN_END) return;
 	screens[id].refresh_timeout = refresh_timeout;
+}
+
+// ---------------------------------------------------------------------------
+void Screen_ShowLoadingScreen(Screen id, int show) {
+      if(id >= SCREEN_END) return;
+      screens[id].long_init = show;
 }
 
 // ---------------------------------------------------------------------------
