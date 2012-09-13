@@ -88,6 +88,30 @@ void freeStations(ArrayList* stations) {
  }
 }
 
+
+// ---------------------------------------------------------------------------
+void deleteStation(int index) {
+  int i;
+  ArrayList* stations = readStations();
+  
+  // delete station
+  StationInfo* del = AList_Get(stations, index);
+  free(del->name);
+  free(del->url);
+  free(del->genre);
+  free(del);
+  // shift other stations
+  for(i = index; i < AList_Length(stations) - 1; i++) {
+    AList_Set(stations, i, AList_Get(stations, i + 1)); 
+  }
+  AList_Delete(stations, AList_Length(stations) - 1);
+  
+  writeStations(stations);
+  freeStations(stations);
+  AList_Destroy(stations);
+}
+
+
 // ---------------------------------------------------------------------------
 void asFavorite(int fav_id) {
   int sel_id = Menu_GetSelectedItem(menu_stations);

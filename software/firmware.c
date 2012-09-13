@@ -110,6 +110,7 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_SHOUTCAST, init_Shoutcast, draw_Shoutcast, exit_Shoutcast);
  Screen_Add(SCREEN_SHOUTCAST_LIST, init_ShoutcastList, draw_ShoutcastList, exit_ShoutcastList);
  Screen_Add(SCREEN_SHOUTCAST_GENRE, init_ShoutcastGenre, draw_ShoutcastGenre, exit_ShoutcastGenre);
+ Screen_Add(SCREEN_MANAGE_STATION, init_ManageStation, draw_ManageStation, exit_ManageStation);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
@@ -124,6 +125,7 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST, 10);
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_LIST, 10);
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_GENRE, 10);
+ Screen_SetRefreshTimeout(SCREEN_MANAGE_STATION, 10);
   
  // reset song info
  resetMetaInfo();
@@ -146,6 +148,8 @@ int main(int argc, char* argv[]) {
   }
   
   screen = Screen_GetActive();
+  
+  // ---------------------------------------------------------------------------
   if(screen == SCREEN_MAIN) {
     int selection = Menu_IsChosen(menu_main);
     if(selection == 0) {
@@ -165,11 +169,13 @@ int main(int argc, char* argv[]) {
       Screen_Goto(SCREEN_SETTINGS);
     }
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_INFO) {
     if(IO_GetButton(0)) {
       Screen_Goto(SCREEN_SETTINGS);
     }
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_STATIONS) {
     int selection = Menu_IsChosen(menu_stations);
     if(selection != -1) {
@@ -183,10 +189,12 @@ int main(int argc, char* argv[]) {
     if(IO_GetButtonLong(5)) asFavorite(3);
     if(IO_GetButtonLong(6)) asFavorite(4);
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_NOW_PLAYING) {
     // if at now playing screen, backlight is always on
     if(keep_light_when_playing) GLCDD_BacklightReset(); 
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_SETTINGS) {
       int selection = Menu_IsChosen(menu_settings);
       if(selection == 0) {
@@ -201,8 +209,12 @@ int main(int argc, char* argv[]) {
       } else if(selection == 3) {
 	// goto volume adjustment
 	Screen_Goto(SCREEN_VOLUME);
+      } else if(selection == 4) {
+	// goto station manager
+	Screen_Goto(SCREEN_MANAGE_STATION);
       }
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_WIFI_SCAN) {
       int selection = Menu_IsChosen(menu_wifi_scan);
       if(selection != -1) {
@@ -212,6 +224,7 @@ int main(int argc, char* argv[]) {
 	Screen_Goto(SCREEN_WIFI_AUTH);
       }
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_WIFI_AUTH) {
       if(Keyboard_IsConfirmed()) {
 	// connect to wifi network
@@ -220,6 +233,7 @@ int main(int argc, char* argv[]) {
 	Screen_Goto(SCREEN_WIFI_CONNECT);
       }
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_LANGUAGE) {
       // change language
       int selection = Menu_IsChosen(menu_language);
@@ -241,13 +255,14 @@ int main(int argc, char* argv[]) {
 	Screen_Goto(SCREEN_SETTINGS);
       }
   }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_VOLUME) {
       if(IO_GetButton(0)) {
 	// go back to settings
 	Screen_Goto(SCREEN_SETTINGS);
       }
   }
-  
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_SHOUTCAST) {
       int selection = Menu_IsChosen(menu_shoutcast);
       if(selection == 0) {
@@ -270,7 +285,7 @@ int main(int argc, char* argv[]) {
 	Screen_Goto(SCREEN_SHOUTCAST_GENRE);
       }
   }
-  
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_SHOUTCAST_GENRE) {
       int selection = Menu_IsChosen(menu_genres);
       if(selection != -1) {
@@ -299,7 +314,7 @@ int main(int argc, char* argv[]) {
 	}
       }
   }
-  
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_SHOUTCAST_LIST) {
       if(Menu_GetAutoIO(menu_station_list)) {
 	int selection = Menu_IsChosen(menu_station_list);
@@ -356,6 +371,75 @@ int main(int argc, char* argv[]) {
 	}
       }
   }
+  // ---------------------------------------------------------------------------
+  else if(screen == SCREEN_MANAGE_STATION) {
+      if(Menu_GetAutoIO(menu_m_station)) { // handle station list menu
+	int selection = Menu_IsChosen(menu_m_station);
+	if(selection != -1) { // show menu
+	  Menu_SetAutoIO(menu_m_station, 0);
+	  Menu_ScrollTo(menu_m_menu, 0);
+	  Screen_ForceRedraw();
+	}
+      } else {
+	if(Menu_GetAutoIO(menu_m_menu)) { // handle station menu
+	    int selection = Menu_IsChosen(menu_m_menu);
+	    
+	    if(selection == 0) {
+	      // do nothing (cancel)
+	    }
+	    else if(selection == 1) {
+	      // move -> handled below
+	    }
+	    else if(selection == 2) {
+	      printf("Delete station\r\n");  
+	      deleteStation(Menu_GetSelectedItem(menu_m_station));
+	      Screen_Goto(SCREEN_MANAGE_STATION);
+	    }
+	    
+	    // close menu
+	    if(selection != -1) {
+	      if(selection == 1) { // move -> disable all menus
+		Menu_SetAutoIO(menu_m_menu, 0);
+		Menu_SetTitleTag(menu_m_station, Menu_GetSelectedItem(menu_m_station), '*');
+		Screen_ForceRedraw();
+	      } else {
+		Menu_SetAutoIO(menu_m_station, 1);
+		Screen_ForceRedraw();
+	      }
+	    }
+	}
+	
+	else { // moving stations
+	  if(IO_GetButton(0)) { // we are done
+	    Menu_SetTitleTag(menu_m_station, Menu_GetSelectedItem(menu_m_station), 0);
+	    ArrayList* new_stations = AList_Create();
+	    int i;
+	    for(i = 0; i < Menu_GetItems(menu_m_station); i++) {
+	      StationInfo* info = Menu_GetItemTag(menu_m_station, i);
+	      AList_Add(new_stations, info);
+	    }
+	    writeStations(new_stations);
+	    AList_Destroy(new_stations);
+	    
+	    Menu_SetAutoIO(menu_m_menu, 1);
+	    Menu_SetAutoIO(menu_m_station, 1);
+	    Screen_ForceRedraw();
+	  }
+	  else {
+	   int8_t rotary = IO_GetRotaryValue();
+	   if(rotary != 0) {
+	      int index = Menu_GetSelectedItem(menu_m_station);
+	      int new_index = index + ((rotary > 0) ? 1 : -1);
+	      Menu_SwapItems(menu_m_station, index, new_index); 
+	      Menu_Scroll(menu_m_station, (rotary > 0) ? 1 : -1);
+	   }
+	  }
+	  
+	}
+	
+      }
+  }
+  // ---------------------------------------------------------------------------
 
   // home button
   if(IO_GetButton(1)) Screen_Goto(SCREEN_MAIN);

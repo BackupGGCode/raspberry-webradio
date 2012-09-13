@@ -241,6 +241,13 @@ int Menu_GetSelectedItem(Menu_Info* menu) {
 }
 
 // ---------------------------------------------------------------------------
+void Menu_SetSelectedItem(Menu_Info* menu, int index) {
+    assert(menu != NULL);
+    if(index < 0 || index >= menu->items_count) return;
+    menu->selected_item = index;
+}
+
+// ---------------------------------------------------------------------------
 void Menu_ScrollTo(Menu_Info* menu, int pos) {
 	assert(menu != NULL);
 	if(pos >= menu->items_count) return;
@@ -293,6 +300,7 @@ int Menu_IsChosen(Menu_Info* menu) {
 
 // ---------------------------------------------------------------------------
 void Menu_SetScroll(Menu_Info* menu, Menu_Scrolling scroll) {
+    assert(menu != NULL);
     menu->scroll = scroll;
 }
 
@@ -301,5 +309,16 @@ int Menu_GetItems(Menu_Info* menu) {
 	assert(menu != NULL);
 	return menu->items_count;
 }
+
+// ---------------------------------------------------------------------------
+void Menu_SwapItems(Menu_Info* menu, int item1, int item2) {
+  assert(menu != NULL);
+  if(item1 < 0 || item2 < 0 || item1 >= menu->items_count || item2 >= menu->items_count) return;
+  
+  Menu_Item tmp = menu->items[item1];
+  menu->items[item1] = menu->items[item2];
+  menu->items[item2] = tmp;
+}
+
 
 

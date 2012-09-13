@@ -56,7 +56,10 @@ typedef enum {
 	PLAY,
 	AS_FAVORITE,
 	CANCEL,
-	MANAGE_STATIONS
+	MANAGE_STATIONS,
+	STATIONS_MANAGE_TITLE,
+	DELETE,
+	MOVE
 } Language_String;
 
 int Language_Init(char* lang);
