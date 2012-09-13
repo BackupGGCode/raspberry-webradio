@@ -25,6 +25,9 @@ void init_Settings() {
   id = Menu_AddItem(menu_settings, _lng(VOLUME));
   Menu_AddItemImage(menu_settings, id, img_volume, 10, 10);
   
+  id = Menu_AddItem(menu_settings, _lng(MANAGE_STATIONS));
+  Menu_AddItemImage(menu_settings, id, img_edit, 10, 10);
+  
   Menu_SetAutoIO(menu_settings, 1);
   Menu_SetBorder(menu_settings, BORDER_NONE);
   Menu_EnableImages(menu_settings, 1);

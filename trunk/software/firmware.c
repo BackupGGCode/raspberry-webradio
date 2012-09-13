@@ -257,6 +257,13 @@ int main(int argc, char* argv[]) {
 	setCurrentGenre(" ");
 	Screen_Goto(SCREEN_SHOUTCAST_LIST);
       } 
+      else if(selection == 1) { 
+	// random station
+	setShoutcastListUrl("http://api.shoutcast.com/station/randomstations?k=so1N15vhCB78Z6k4&f=xml&mt=audio/mpeg");
+	setStationsParentGenre("X");
+	setCurrentGenre(" ");
+	Screen_Goto(SCREEN_SHOUTCAST_LIST);
+      }
       else if(selection == 2) {
 	// go to genre list
 	setShoutcastGenreParent("0");
