@@ -122,6 +122,27 @@ void parseStationList(char *docname) {
 		return;
 	}
 	
+	// if we are not in legacy mode, travel to stationlist node
+	int found = 0;
+	if(!xmlStrcmp(cur->name, (const xmlChar*)"response")) {
+	  cur = cur->xmlChildrenNode;
+	  while (cur != NULL) {
+	    if((!xmlStrcmp(cur->name, (const xmlChar*)"data"))) {
+		  cur = cur->xmlChildrenNode;
+		  
+		  while(cur != NULL) {
+		    if((!xmlStrcmp(cur->name, (const xmlChar*)"stationlist"))) {
+		      found = 1;
+		      break;
+		    }
+		    cur = cur->next;
+		  }
+		  if(found) break;
+	    }
+	    cur = cur->next;
+	  }
+	} 
+	
 	if (xmlStrcmp(cur->name, (const xmlChar *) "stationlist")) {
 		xmlFreeDoc(doc);
 		return;
