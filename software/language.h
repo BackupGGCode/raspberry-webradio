@@ -64,7 +64,8 @@ typedef enum {
 	LOADING,
 	MINUTES,
 	SEARCH,
-	RESTART
+	RESTART,
+	SHUTDOWN
 } Language_String;
 
 int Language_Init(char* lang);

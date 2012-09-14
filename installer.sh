@@ -138,6 +138,7 @@ cp interfaces/songcontrol/*.sh /home/pi/ 2> /dev/null
 cp interfaces/songcontrol/usb_play /home/pi/ 2> /dev/null
 cp interfaces/songcontrol/stream /home/pi/ 2> /dev/null
 cp interfaces/songcontrol/play.conf /home/pi/ 2> /dev/null
+cp interfaces/*.sh /home/pi 2> /dev/null
 cp software/firmware /home/pi/ 2> /dev/null
 
 # set root rights to firmware
