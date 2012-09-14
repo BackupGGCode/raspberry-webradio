@@ -42,7 +42,7 @@ ShoutcastStation* getChosenStation(int id) {
 // ---------------------------------------------------------------------------
 StationInfo* parseShoutcastList(ShoutcastStation* station) {
   char buffer[256];
-  sprintf(buffer, "http://yp.shoutcast.com/sbin/tunein-station.pls?id=%s", station->id);
+  sprintf(buffer, Settings_Get("shoutcast", "playlist_url"), station->id);
   Download_Get(buffer, "/tmp/station.pls");
   
   // shuffle playlist to choose a random mirror
@@ -70,7 +70,6 @@ StationInfo* parseShoutcastList(ShoutcastStation* station) {
       char* s_url = (char*)malloc(sizeof(char) * (1 + strlen(url)));
       strcpy(s_url, url);
     
-      printf("Play station '%s' @ '%s'\r\n", station->name, url);
       StationInfo* info = (StationInfo*)malloc(sizeof(StationInfo));
       info->name = station->name;
       info->genre = NULL;

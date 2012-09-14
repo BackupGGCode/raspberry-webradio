@@ -16,6 +16,7 @@ void init_Shoutcast() {
   Menu_AddItem(menu_shoutcast, _lng(SHOUTCAST_TOP));
   Menu_AddItem(menu_shoutcast, _lng(SHOUTCAST_RANDOM));
   Menu_AddItem(menu_shoutcast, _lng(GENRE));
+  Menu_AddItem(menu_shoutcast, _lng(SEARCH));
   
   Menu_SetAutoIO(menu_shoutcast, 1);
   Menu_SetBorder(menu_shoutcast, BORDER_NONE);
