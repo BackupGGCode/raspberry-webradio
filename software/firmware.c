@@ -258,6 +258,14 @@ int main(int argc, char* argv[]) {
       } else if(selection == 4) {
 	// goto station manager
 	Screen_Goto(SCREEN_MANAGE_STATION);
+      } else if(selection == 5) {
+	// restart firmware
+	// stop all music
+	stopMusic();
+	// kill all streams
+	ignore_result(system(Settings_Get("programs", "killall")));
+	// restart self
+	execv(argv[0], argv);
       }
   }
   // ---------------------------------------------------------------------------
