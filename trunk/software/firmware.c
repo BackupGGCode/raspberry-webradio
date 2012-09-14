@@ -266,6 +266,9 @@ int main(int argc, char* argv[]) {
 	ignore_result(system(Settings_Get("programs", "killall")));
 	// restart self
 	execv(argv[0], argv);
+      } else if(selection == 6) {
+	// shutdown
+	Screen_Goto(SCREEN_SHUTDOWN); 
       }
   }
   // ---------------------------------------------------------------------------
@@ -552,11 +555,6 @@ int main(int argc, char* argv[]) {
   if(IO_GetButton(5)) playFavorite(3);
   // (4) button
   if(IO_GetButton(6)) playFavorite(4);
-  
-  // shutdown (stop button long)
-  if(IO_GetButtonLong(2)) {
-    Screen_Goto(SCREEN_SHUTDOWN); 
-  }
   
   Screen_Draw();
 

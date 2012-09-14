@@ -33,6 +33,7 @@ extern const uint8_t img_load[];
 extern const uint8_t img_setter[];
 extern const uint8_t img_snooze[];
 extern const uint8_t img_reset[];
+extern const uint8_t img_shutdown[];
 
 #endif
 

@@ -23,6 +23,9 @@
 #define DEBUG_PRINT //
 #endif
 
+// enclose function in this to avaid warn_unused_result warning
+#define ignore_result(x) ({ typeof(x) z = x; (void)sizeof z; })
+
 FILE* mp3;
 long pipe_id = 0;
 int is_in_header = 1;
@@ -283,13 +286,13 @@ void broken_pipe() {
 
 // ---------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
+  // load settings
+  Settings_Load("play.conf");
+
   // initialize signal handlers
   signal(SIGINT, (sig_t)cleanup);
   signal(SIGPIPE, (sig_t)broken_pipe);
   atexit(exit_func);
-  
-  // load settings
-  Settings_Load("play.conf");
   
   player = Settings_Get("program", "player");
   strcpy(current_song, Settings_Get("path", "current_song"));
