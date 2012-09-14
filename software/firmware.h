@@ -15,6 +15,8 @@
 #include <time.h>
 #include <dirent.h>
 #include <signal.h>
+#include <sys/time.h>
+
 
 char* FW_VERSION;
 char* SONG_FILE;

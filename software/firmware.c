@@ -47,6 +47,22 @@ void stopMusic() {
 }
 
 // ---------------------------------------------------------------------------
+uint64_t getTimeMillisecond() {
+  struct timeval tv;
+
+ gettimeofday(&tv, NULL);
+
+ uint64_t ret = tv.tv_usec;
+ /* Convert from micro seconds (10^-6) to milliseconds (10^-3) */
+ ret /= 1000;
+
+ /* Adds the seconds (10^0) after converting them to milliseconds (10^-3) */
+ ret += (tv.tv_sec * 1000);
+
+ return ret; 
+}
+
+// ---------------------------------------------------------------------------
 int main(int argc, char* argv[]) {
  signal(SIGINT, (sig_t)cleanup);
 
@@ -158,9 +174,14 @@ int main(int argc, char* argv[]) {
  if(strcmp(Settings_Get("gui", "keep_light_when_playing"), "true") == 0) keep_light_when_playing = 1;
  GLCDD_BacklightReset();
  
+ uint64_t last_io = 0;
+ 
  while(1) {
  
-  IO_Get();
+  if(getTimeMillisecond() - last_io >= 25) {
+    IO_Get();
+    last_io = getTimeMillisecond();
+  }
   if(IO_HasChanged()) {
     Screen_ForceRedraw();
     GLCDD_BacklightReset();
