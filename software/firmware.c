@@ -138,6 +138,7 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_SHOUTCAST, init_Shoutcast, draw_Shoutcast, exit_Shoutcast);
  Screen_Add(SCREEN_SHOUTCAST_LIST, init_ShoutcastList, draw_ShoutcastList, exit_ShoutcastList);
  Screen_Add(SCREEN_SHOUTCAST_GENRE, init_ShoutcastGenre, draw_ShoutcastGenre, exit_ShoutcastGenre);
+ Screen_Add(SCREEN_SHOUTCAST_SEARCH, init_ShoutcastSearch, draw_ShoutcastSearch, NULL);
  Screen_Add(SCREEN_MANAGE_STATION, init_ManageStation, draw_ManageStation, exit_ManageStation);
  Screen_Add(SCREEN_SNOOZE, init_Snooze, draw_Snooze, exit_Snooze);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
@@ -154,6 +155,7 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST, 10);
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_LIST, 10);
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_GENRE, 10);
+ Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_SEARCH, 10);
  Screen_SetRefreshTimeout(SCREEN_MANAGE_STATION, 10);
  Screen_SetRefreshTimeout(SCREEN_SNOOZE, 10);
  Screen_ShowLoadingScreen(SCREEN_USB, 1);
@@ -177,11 +179,15 @@ int main(int argc, char* argv[]) {
  uint64_t last_io = 0;
  
  while(1) {
- 
+
+#ifndef SIMULATE
   if(getTimeMillisecond() - last_io >= 25) {
     IO_Get();
     last_io = getTimeMillisecond();
   }
+#else
+  IO_Get();
+#endif
   if(IO_HasChanged()) {
     Screen_ForceRedraw();
     GLCDD_BacklightReset();
@@ -307,14 +313,15 @@ int main(int argc, char* argv[]) {
       int selection = Menu_IsChosen(menu_shoutcast);
       if(selection == 0) {
 	// go to shoutcast top stations
-	setShoutcastListUrl("http://api.shoutcast.com/legacy/Top500?k=so1N15vhCB78Z6k4&limit=25&mt=audio/mpeg");
+	setShoutcastListUrl(Settings_Get("shoutcast", "list_url"));
+	printf("'%s'\r\n", Settings_Get("shoutcast", "list_url"));
 	setStationsParentGenre("X");
 	setCurrentGenre(" ");
 	Screen_Goto(SCREEN_SHOUTCAST_LIST);
       } 
       else if(selection == 1) { 
 	// random station
-	setShoutcastListUrl("http://api.shoutcast.com/station/randomstations?k=so1N15vhCB78Z6k4&f=xml&mt=audio/mpeg");
+	setShoutcastListUrl(Settings_Get("shoutcast", "random_url"));
 	setStationsParentGenre("X");
 	setCurrentGenre(" ");
 	Screen_Goto(SCREEN_SHOUTCAST_LIST);
@@ -323,6 +330,10 @@ int main(int argc, char* argv[]) {
 	// go to genre list
 	setShoutcastGenreParent("0");
 	Screen_Goto(SCREEN_SHOUTCAST_GENRE);
+      }
+      else if(selection == 3) {
+	// go to station search
+	Screen_Goto(SCREEN_SHOUTCAST_SEARCH);
       }
   }
   // ---------------------------------------------------------------------------
@@ -345,8 +356,7 @@ int main(int argc, char* argv[]) {
 	    Screen_Goto(SCREEN_SHOUTCAST_GENRE);
 	  } else { // show stations
 	    char buffer[128];
-	    sprintf(buffer, "http://api.shoutcast.com/legacy/genresearch?k=so1N15vhCB78Z6k4&f=xml&genre=%s", info->name);
-	    printf("Stations: %s\r\n", buffer);
+	    sprintf(buffer, Settings_Get("shoutcast", "stations_by_genre_url"), info->name);
 	    setShoutcastListUrl(buffer);
 	    setCurrentGenre(info->name);
 	    Screen_Goto(SCREEN_SHOUTCAST_LIST);
@@ -382,7 +392,6 @@ int main(int argc, char* argv[]) {
 	      StationInfo* station = parseShoutcastList(info);
 	      station->genre = getCurrentGenre();
 	      playStation(station);
-	      printf("play %s @ 'http://yp.shoutcast.com/sbin/tunein-station.pls?id=%s'\r\n", info->name, info->id);
 	      free(station->url);
 	      free(station);
 	  }
@@ -413,6 +422,17 @@ int main(int argc, char* argv[]) {
       }
   }
   // ---------------------------------------------------------------------------
+  else if(screen == SCREEN_SHOUTCAST_SEARCH) {
+    if(Keyboard_IsConfirmed()) {
+      char buffer[256];
+      sprintf(buffer, Settings_Get("shoutcast", "search_url"), Keyboard_GetText());
+      setShoutcastListUrl(buffer);
+      setStationsParentGenre("X");
+      setCurrentGenre(" ");
+      Screen_Goto(SCREEN_SHOUTCAST_LIST);
+    }
+  }
+  // ---------------------------------------------------------------------------
   else if(screen == SCREEN_MANAGE_STATION) {
       if(Menu_GetAutoIO(menu_m_station)) { // handle station list menu
 	int selection = Menu_IsChosen(menu_m_station);
@@ -432,7 +452,6 @@ int main(int argc, char* argv[]) {
 	      // move -> handled below
 	    }
 	    else if(selection == 2) {
-	      printf("Delete station\r\n");  
 	      deleteStation(Menu_GetSelectedItem(menu_m_station));
 	      Screen_Goto(SCREEN_MANAGE_STATION);
 	    }

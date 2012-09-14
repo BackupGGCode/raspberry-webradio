@@ -117,11 +117,10 @@ void init_ShoutcastGenre() {
   
   // download station xml
   if(strcmp(ShoutcastGenreParent, "0") == 0) {
-    Download_Get("http://api.shoutcast.com/genre/primary?k=so1N15vhCB78Z6k4&f=xml", "station.xml");
+    Download_Get(Settings_Get("shoutcast", "genres_url"), "station.xml");
   } else {
     char buffer[128];
-    sprintf(buffer, "http://api.shoutcast.com/genre/secondary?parentid=%s&k=so1N15vhCB78Z6k4&f=xml", ShoutcastGenreParent);
-    printf("Get subgenre: %s\r\n", buffer);
+    sprintf(buffer, Settings_Get("shoutcast", "subgenres_url"), ShoutcastGenreParent);
     Download_Get(buffer, "station.xml");
   }
   // parse the stations

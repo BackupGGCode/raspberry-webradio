@@ -118,7 +118,9 @@ int Settings_Load(char* file) {
 			strcpy(key, ptr);
 			key = trim(key);
 
-			ptr = strtok(NULL, "=");
+			
+			ptr = strtok(NULL, "\1");
+			//ptr += strlen(ptr) + 1;
 			if(ptr == NULL) {
 				fclose(f);
 				return 0;

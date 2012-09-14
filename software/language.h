@@ -62,7 +62,8 @@ typedef enum {
 	MOVE,
 	SNOOZE,
 	LOADING,
-	MINUTES
+	MINUTES,
+	SEARCH
 } Language_String;
 
 int Language_Init(char* lang);
