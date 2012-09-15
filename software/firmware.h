@@ -74,6 +74,7 @@ typedef struct {
 #include "screen_shoutcast_search.h"
 #include "screen_manage_station.h"
 #include "screen_snooze.h"
+#include "screen_timeout.h"
 
 
 #endif

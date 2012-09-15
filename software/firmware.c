@@ -141,6 +141,7 @@ int main(int argc, char* argv[]) {
  Screen_Add(SCREEN_SHOUTCAST_SEARCH, init_ShoutcastSearch, draw_ShoutcastSearch, NULL);
  Screen_Add(SCREEN_MANAGE_STATION, init_ManageStation, draw_ManageStation, exit_ManageStation);
  Screen_Add(SCREEN_SNOOZE, init_Snooze, draw_Snooze, exit_Snooze);
+ Screen_Add(SCREEN_TIMEOUT, init_Timeout, draw_Timeout, NULL);
  Screen_SetRefreshTimeout(SCREEN_INFO, 2);
  Screen_SetRefreshTimeout(SCREEN_MAIN, 10);
  Screen_SetRefreshTimeout(SCREEN_NOW_PLAYING, 1);
@@ -158,6 +159,7 @@ int main(int argc, char* argv[]) {
  Screen_SetRefreshTimeout(SCREEN_SHOUTCAST_SEARCH, 10);
  Screen_SetRefreshTimeout(SCREEN_MANAGE_STATION, 10);
  Screen_SetRefreshTimeout(SCREEN_SNOOZE, 10);
+ Screen_SetRefreshTimeout(SCREEN_TIMEOUT, 10);
  Screen_ShowLoadingScreen(SCREEN_USB, 1);
  Screen_ShowLoadingScreen(SCREEN_VOLUME, 1);
  Screen_ShowLoadingScreen(SCREEN_SHOUTCAST_LIST, 1);
@@ -256,9 +258,12 @@ int main(int argc, char* argv[]) {
 	// goto volume adjustment
 	Screen_Goto(SCREEN_VOLUME);
       } else if(selection == 4) {
+	// goto backlight timeout
+	Screen_Goto(SCREEN_TIMEOUT);
+      } else if(selection == 5) {
 	// goto station manager
 	Screen_Goto(SCREEN_MANAGE_STATION);
-      } else if(selection == 5) {
+      } else if(selection == 6) {
 	// restart firmware
 	// stop all music
 	stopMusic();
@@ -266,7 +271,7 @@ int main(int argc, char* argv[]) {
 	ignore_result(system(Settings_Get("programs", "killall")));
 	// restart self
 	execv(argv[0], argv);
-      } else if(selection == 6) {
+      } else if(selection == 7) {
 	// shutdown
 	Screen_Goto(SCREEN_SHUTDOWN); 
       }
@@ -509,6 +514,18 @@ int main(int argc, char* argv[]) {
 	}
 	
       }
+  }
+  // ---------------------------------------------------------------------------
+  else if(screen == SCREEN_TIMEOUT) {
+     if(IO_GetButton(0)) {
+      // go back to settings
+      char buffer[8];
+      sprintf(buffer, "%d", Timeout_Get());
+      Settings_Add("hardware", "timeout", buffer);
+      Settings_Save(settings_file);
+      GLCDD_BacklightTimeout(Timeout_Get());      
+      Screen_Goto(SCREEN_SETTINGS); 
+    }     
   }
   // ---------------------------------------------------------------------------
 
