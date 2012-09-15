@@ -13,6 +13,9 @@ int NowPlaying_ShowMenu;
 StationInfo NowPlaying_CurStation;
 int NowPlaying_IsFavorite = 0;
 char NowPlaying_CSInfo[512];
+int NowPlaying_Sel;
+int NowPlaying_ScrollOffset;
+int NowPlaying_ScrollDir;
 
 // ---------------------------------------------------------------------------
 void parseCurrentStation() {
@@ -78,6 +81,9 @@ void createContextMenu() {
 void init_NowPlaying() {
   NowPlaying_ShowMenu = 0;
   menu_now_playing = NULL;
+  NowPlaying_Sel = 0;
+  NowPlaying_ScrollOffset = 0;
+  NowPlaying_ScrollDir = 1;
   
   createContextMenu();
 }
@@ -85,6 +91,7 @@ void init_NowPlaying() {
 // ---------------------------------------------------------------------------
 void draw_NowPlaying() {
   char buffer[512];
+  int idx;
 
   Screen_DrawBorder(_lng(NOW_PLAYING_TITLE));
   
@@ -110,9 +117,36 @@ void draw_NowPlaying() {
   r.y = 14;
   r.w = SCREEN_W - 12;
   r.h = -1;
-  if(strlen(&buffer[i+3]) > 1) GLCDD_Print(fnt_dejavu_9b, &r, &buffer[i+3]); else GLCDD_Print(fnt_dejavu_9b, &r, _lng(NO_TITLE));
+  idx = i + 3 + (NowPlaying_Sel == 1 ? NowPlaying_ScrollOffset : 0);
+  // limit scrolling
+  if(NowPlaying_Sel == 1) {
+    if(GLCDD_StringWidth(fnt_dejavu_9b, &buffer[idx]) + r.x < r.w) {
+      NowPlaying_ScrollDir *= -1; 
+      if(idx > i + 3) idx--;
+    }
+    else if(NowPlaying_ScrollOffset < 0) {
+      NowPlaying_ScrollDir *= -1;
+      idx++;
+    }
+  }
+  // draw title
+  if(strlen(&buffer[idx]) > 1) GLCDD_Print(fnt_dejavu_9b, &r, &buffer[idx]); else GLCDD_Print(fnt_dejavu_9b, &r, _lng(NO_TITLE));
+  
   r.y = 29;
-  if(strlen(buffer) > 1) GLCDD_Print(fnt_dejavu_9, &r, buffer); else GLCDD_Print(fnt_dejavu_9, &r, _lng(NO_ARTIST));
+  idx = (NowPlaying_Sel == 2 ? NowPlaying_ScrollOffset : 0);
+  // limit scrolling
+  if(NowPlaying_Sel == 2) {
+    if(GLCDD_StringWidth(fnt_dejavu_9, &buffer[idx]) + r.x < r.w) {
+      NowPlaying_ScrollDir *= -1; 
+      if(idx > 0) idx--;
+    }
+    else if(NowPlaying_ScrollOffset < 0) {
+      NowPlaying_ScrollDir *= -1;
+      idx++;
+    }
+  }
+  // draw artist
+  if(strlen(&buffer[idx]) > 1) GLCDD_Print(fnt_dejavu_9, &r, &buffer[idx]); else GLCDD_Print(fnt_dejavu_9, &r, _lng(NO_ARTIST));
   
  
   // get station
@@ -122,7 +156,37 @@ void draw_NowPlaying() {
   fclose(f);
  
   r.y = 44;
-  if(strlen(buffer) <= 2) GLCDD_Print(fnt_dejavu_9, &r, _lng(NO_STATION)); else GLCDD_Print(fnt_dejavu_9, &r, buffer);
+  idx = (NowPlaying_Sel == 3 ? NowPlaying_ScrollOffset : 0);
+  // limit scroling
+  if(NowPlaying_Sel == 3) {
+    if(GLCDD_StringWidth(fnt_dejavu_9, &buffer[idx]) + r.x < r.w) {
+      NowPlaying_ScrollDir *= -1; 
+      if(idx > 0) idx--;
+    }
+    else if(NowPlaying_ScrollOffset < 0) {
+      NowPlaying_ScrollDir *= -1;
+      idx++;
+    }
+  }
+  // draw station
+  if(strlen(buffer) <= 2) GLCDD_Print(fnt_dejavu_9, &r, _lng(NO_STATION)); else GLCDD_Print(fnt_dejavu_9, &r, &buffer[idx]);
+  
+  // draw scrolling text if line is selected
+  if(!NowPlaying_ShowMenu) {
+    int8_t rotary = IO_GetRotaryValue();
+    if(rotary != 0) {
+      NowPlaying_ScrollOffset = 0;
+      NowPlaying_ScrollDir = 1;
+    }
+    NowPlaying_Sel += rotary;
+    if(NowPlaying_Sel < 0) NowPlaying_Sel = 0;
+    if(NowPlaying_Sel >= 4) NowPlaying_Sel = 3;
+    
+    GLCDD_Invert(4, 12 + (NowPlaying_Sel - 1) * 15, SCREEN_W - 4, 12 + 2 + GLCDD_FontHeight(fnt_dejavu_9) + (NowPlaying_Sel - 1) * 15);
+    
+    if(NowPlaying_Sel != 0) NowPlaying_ScrollOffset += NowPlaying_ScrollDir;
+  }
+  
   
   // we play from usb and can therefore skip the song
   if(strncmp(buffer, _lng(USB), strlen(_lng(USB))) == 0) {
