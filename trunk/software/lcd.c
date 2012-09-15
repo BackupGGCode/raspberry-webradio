@@ -15,7 +15,24 @@ int GLCD_MapFd;
 uint32_t GLCD_BacklightTime, GLCD_BacklightLast;
 uint8_t GLCD_BacklightStat = 0;
 sigset_t intmask;  
+char GLCD_Umlauts[] = UMLAUTS;
+char* GLCD_UmlautReplace[] = UMLAUTS_REPLACE;
 
+
+// ---------------------------------------------------------------------------
+int isUmlaut(char c) {
+  if(c == -61) return 1; 
+  else return 0;
+}
+
+// ---------------------------------------------------------------------------
+char* replaceUmlaut(char uml) {
+  int i;
+  for(i = 0; i < UMLAUTS_COUNT; i++) {
+    if(GLCD_Umlauts[i] == uml) return GLCD_UmlautReplace[i]; 
+  }
+  return NULL;
+}
 
 // ---------------------------------------------------------------------------
 void GLCDD_SetSimulate(uint8_t sim) {
@@ -338,14 +355,22 @@ int GLCDD_PutChar(const uint8_t *font, int x, int y, char c) {
  return GLCDD_PutCharCol(font, x, y, c, 0);
 }
 
+
 // ---------------------------------------------------------------------------
 int GLCDD_PrintGeneric(const uint8_t* font, int x, int y, int max_w, char* str, uint8_t col, uint8_t del_before) {
- int w = 0;
+ int w = 0, uml;
  while(str && *str) {
-  w += GLCDD_CharWidth(font, *str) + 1;
-  if(max_w != -1 && w > max_w) break;
-  x += GLCDD_PutCharCol(font, x, y, *str, col);
-  str++;
+  if(isUmlaut(*str)) {
+    uml = GLCDD_PrintGeneric(font, x, y, max_w - w, replaceUmlaut(*(str + 1)), col, del_before);
+    w += uml;
+    x += uml;
+    str += 2;
+  } else {
+    w += GLCDD_CharWidth(font, *str) + 1;
+    if(max_w != -1 && w > max_w) break;
+    x += GLCDD_PutCharCol(font, x, y, *str, col);
+    str++;
+  }
  } 
  return w;
 }

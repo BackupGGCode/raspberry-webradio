@@ -38,6 +38,11 @@
 #define DATA   8
 #define BACKLIGHT 25
 
+#define UMLAUTS_COUNT     7
+//                         ä     ö     ü     Ä     Ö     Ü     ß
+#define UMLAUTS          {-92,  -74,  -68,  -124,  -106,  -100,  -97}
+#define UMLAUTS_REPLACE  {"ae", "oe", "ue", "Ae", "Oe", "Ue", "ss"}
+
 typedef struct {
 	uint8_t* name;
 	uint8_t color;
