@@ -65,7 +65,9 @@ typedef enum {
 	MINUTES,
 	SEARCH,
 	RESTART,
-	SHUTDOWN
+	SHUTDOWN,
+	BACKLIGHT_TIMEOUT,
+	SECONDS
 } Language_String;
 
 int Language_Init(char* lang);
