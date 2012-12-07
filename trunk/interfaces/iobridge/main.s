@@ -482,7 +482,7 @@ main:
 	ori r24,lo8(2)
 	st Z,r24
 /* #APP */
- ;  170 "main.c" 1
+ ;  160 "main.c" 1
 	sei
  ;  0 "" 2
 /* #NOAPP */
