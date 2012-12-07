@@ -133,20 +133,10 @@ ISR(INT1_vect) {
 		if(rotary_current & (1 << (bit_count - 16))) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
 	}
 	
-/*	if(bit_count == 0) {
-	    buttons = 0;
-	    buttons_long = 0;
-	    enc_delta = 0;
-	}
-	
-	if(current_val & current_bit) PORTD |= (1 << PD4); else PORTD &=~(1 << PD4);
-	current_bit *= 2;*/
-	
 	bit_count++;
 	// reset bit count
 	if(bit_count == 24) {
 		bit_count = 0;
-// 		current_bit = 1;
 	}
 }
 
