@@ -8,6 +8,7 @@
 #include <wx/process.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/param.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <stdint.h>
@@ -21,9 +22,11 @@ class Window: public wxFrame {
  public:
   Window(wxFrame *frame, const wxString& title);
   Window();
+  ~Window();
   
 protected:
   wxStaticBitmap* gui_lcd;
+  wxButton* m_button14;
   wxButton* m_button2;
   wxButton* m_button3;
   wxButton* m_button4;
@@ -57,9 +60,11 @@ protected:
   void Btn2l(wxCommandEvent& event);
   void Btn3l(wxCommandEvent& event);
   void Btn4l(wxCommandEvent& event);
+  void SaveScreenshot(wxCommandEvent& event);
   void LoadFirmware(wxCommandEvent& event);
   void DoLoadFirmware(wxString path, wxString name);
   void DoUnloadFirmware();
+  void DrawDisplay(wxDC &dc, int scale, int off_x, int off_y);
   void OnAbout(wxCommandEvent& event);
   void OnQuit(wxCommandEvent& event);
   void OnTimer(wxTimerEvent& event);

@@ -24,9 +24,6 @@ volatile uint8_t button_must_release = 0;
 
 volatile uint8_t button_time[BUTTONS];
 
-
-// Dekodertabelle für wackeligen Rastpunkt
-// halbe Auflösung
 int8_t table[16] PROGMEM = {0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, 0, 0};    
 
 #define Timer_Off()  TIMSK &=~(1 << TOIE0)
@@ -35,7 +32,7 @@ int8_t table[16] PROGMEM = {0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, 0, 0};
 void Rotary_Read() {
   static int8_t last = 0;
  
-  last = (last << 2) & 0x0F;
+  last = (last << 2) & 0x0f;
   if(PHASE_A) last |= 2;
   if(PHASE_B) last |= 1;
   enc_delta += pgm_read_byte(&table[last]);
