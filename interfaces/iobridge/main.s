@@ -34,7 +34,7 @@ Rotary_Read:
 	subi r30,lo8(-(table))
 	sbci r31,hi8(-(table))
 /* #APP */
- ;  41 "main.c" 1
+ ;  38 "main.c" 1
 	lpm r30, Z
 	
  ;  0 "" 2
@@ -482,7 +482,7 @@ main:
 	ori r24,lo8(2)
 	st Z,r24
 /* #APP */
- ;  160 "main.c" 1
+ ;  157 "main.c" 1
 	sei
  ;  0 "" 2
 /* #NOAPP */

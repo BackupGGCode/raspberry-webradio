@@ -15,3 +15,5 @@ all: simulator.o
 simulator.o: simulator.cpp
 	g++ simulator.cpp $(WXFLAGS) $(WXLIBS) -c -g -o simulator.o
 
+clean:
+	rm simulator.o simulator

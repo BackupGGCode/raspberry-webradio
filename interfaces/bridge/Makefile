@@ -17,8 +17,13 @@ help:
 	@echo "make hex ....... to build main.hex"
 	@echo "make flash ..... to flash the firmware (use this on metaboard)"
 	@echo "make clean ..... to delete objects and hex file"
+	@echo "make fuses ..... to set the fuses"
 
 hex: main.hex
+
+fuses:
+	$(AVRDUDE) -U lfuse:w:0xde:m -U hfuse:w:0xd9:m
+
 
 # rule for uploading firmware:
 flash: main.hex
