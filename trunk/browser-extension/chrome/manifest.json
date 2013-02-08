@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+
+  "name": "Raspberry Webradio YouTube player",
+  "description": "This extension makes it possible to send a YouTube video to the Raspberry Webradio.",
+  "background": { "scripts": ["background.js"] },
+  "version": "1.0",
+
+  "permissions": [
+    "tabs"
+  ],
+
+  "page_action": {
+    "default_icon": "icon.png"
+  }
+} 
