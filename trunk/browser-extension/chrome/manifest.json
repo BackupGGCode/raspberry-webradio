@@ -7,7 +7,7 @@
   "version": "1.0",
 
   "permissions": [
-    "tabs"
+    "tabs", "http://*/*", "https://*/*"
   ],
 
   "page_action": {
