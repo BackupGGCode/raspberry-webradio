@@ -13,10 +13,7 @@ chrome.pageAction.onClicked.addListener(function(tab) {
   if(url.indexOf("youtube") == -1 || url.indexOf("watch") == -1) {
     alert("Not a YouTube video!"); 
   } else {
-    var req = new XMLHttpRequest();
-    req.open("GET", "http://raspberrypi.local/yt.php?play=" + url, true);
-    req.send(null);
-    alert('Sending YouTube video to Raspberry Webradio! This might take a while.');
+    chrome.tabs.executeScript(null,{file:"send.js"});
   }  
 });
 
