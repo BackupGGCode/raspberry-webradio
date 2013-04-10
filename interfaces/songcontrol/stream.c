@@ -146,12 +146,20 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
    
    // parse metaint from header
    int header_end = 0;
+   
+   // search for end of header and icy data
    while(header_end < req_size) {
      int rest_bytes = req_size - header_end;
      
-     if(rest_bytes >= 4 && strncmp((char*)ptr + header_end, "\r\n\r\n", 4) == 0) {
+     if((rest_bytes >= 4 && strncmp((char*)ptr + header_end, "\r\n\r\n", 4) == 0)) {
        is_in_header = 0; 
        header_end += 4;
+       break;
+     }
+     
+     if(req_size == 2) {
+       is_in_header = 0;
+       header_end += 2;
        break;
      }
      
@@ -173,9 +181,11 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
   
   total_recv_byte += size * nmemb;
   //printf("%lu / %lu\r\n", total_recv_byte, metaint);
-  if(req_size > 2*metaint) DEBUG_PRINT("Warning! Received %lu bytes!\r\n", size * nmemb);
   
   int was_meta = 0;
+
+  if(req_size > 2*metaint) DEBUG_PRINT("Warning! Received %lu bytes!\r\n", size * nmemb);
+  
   // we've received meta data
   if(total_recv_byte > metaint) {
     was_meta = 1;
@@ -188,7 +198,7 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
 #ifdef DEBUG
     FILE* f = fopen("stream.txt", "a");
     fwrite((char*)ptr + metapos + 1, metalen, 1, f);
-    fprintf(f, "\n-----------------------------\n");
+    //fprintf(f, "\n-----------------------------\n");
     fclose(f);
 #endif
     // --- debug end ---
@@ -218,7 +228,7 @@ size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream) {
     send_stream_pipe(ptr + metapos + metalen + 1, size, total_recv_byte, stream);
     return req_size;
   } 
-  
+
   if(!was_meta) {
     // no metadata, just music
     written = send_stream_pipe(ptr, size, nmemb, stream);
@@ -246,6 +256,7 @@ void start_stream() {
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, mp3);
     curl_easy_setopt(curl, CURLOPT_BUFFERSIZE, buffer_size);
+    curl_easy_setopt(curl, CURLOPT_HEADER, 1);
 
     slist = curl_slist_append(slist, "Icy-MetaData:1");  
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, slist);
