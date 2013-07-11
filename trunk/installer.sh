@@ -14,6 +14,9 @@ if [[ ${EUID} -ne 0 ]]; then
 	exit 1
 fi
 
+# update package sources
+apt-get update
+
 # install required software
 if [ ! -f /usr/sbin/avahi-daemon ];
 then
@@ -89,6 +92,14 @@ then
   sudo apt-get install libxml2-dev
 fi
 
+if [ ! -f /usr/include/alsa/asoundlib.h ];
+then
+  echo
+  echo "Installing libasound2"
+  echo
+  apt-get install libasound2-dev
+fi
+
 
 # copy mobile page
 echo
@@ -152,6 +163,11 @@ chown root /home/pi/wifi_connect.sh
 chown root /home/pi/wifi_scan.sh
 chmod 4755 /home/pi/wifi_connect.sh
 chmod 4755 /home/pi/wifi_scan.sh
+chmod 0777 song.txt
+touch stations.txt
+chmod 0777 stations.txt
+chmod 0777 current_station.txt
+
 
 # copy language files
 echo

@@ -24,7 +24,7 @@ volatile uint8_t button_must_release = 0;
 
 volatile uint8_t button_time[BUTTONS];
 
-int8_t table[16] PROGMEM = {0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, 0, 0};    
+const int8_t table[16] PROGMEM = {0, 0, -1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, -1, 0, 0};    
 
 #define Timer_Off()  TIMSK &=~(1 << TOIE0)
 #define Timer_On()   TIMSK |= (1 << TOIE0) 
